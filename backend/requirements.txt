@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+supabase-py
+# Dépendances pour les solveurs PINN (exemples)
+tensorflow
+numpy
+scipy
+# Dépendances pour le Copilot (exemples)
+openai
+# Dépendances pour l'optimisation (exemples)
+PuLP
+# Dépendances pour la gestion des données
+pandas
+matplotlib
+scikit-learn
