@@ -1,17 +1,33 @@
-fastapi
-uvicorn
-pydantic
-python-dotenv
-supabase-py
-# Dépendances pour les solveurs PINN (exemples)
-tensorflow
-numpy
-scipy
-# Dépendances pour le Copilot (exemples)
-openai
-# Dépendances pour l'optimisation (exemples)
-PuLP
-# Dépendances pour la gestion des données
-pandas
-matplotlib
-scikit-learn
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+supabase==1.1.1
+tensorflow==2.13.0
+torch==2.0.1
+numpy==1.24.3
+pandas==2.0.3
+scipy==1.11.3
+openai==1.3.0
+pydantic==2.4.2
+pydantic-settings==2.1.0
+python-jose==3.3.0
+passlib==1.7.4
+bcrypt==4.0.1
+python-dotenv==1.0.0
+websockets==12.0
+aiofiles==23.2.1
+pulp==2.7.0
+pyomo==6.6.2
+plotly==5.17.0
+matplotlib==3.7.2
+scikit-learn==1.3.0
+gunicorn==21.2.0
+alembic==1.12.1
+psycopg2-binary==2.9.7
+httpx==0.25.2
+python-socketio==5.9.0
+dask[complete]==2023.8.0
+ray[default]==2.7.0
+GPUtil==1.4.0
+plotly==5.17.0
+kaleido==0.2.1
