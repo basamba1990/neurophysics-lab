@@ -181,4 +181,237 @@ const SimulationRunner = ({ physicsModel, onSimulationComplete }) => {
       {!isRunning && (
         <form onSubmit={handleSubmit(runSimulation)} className="space-y-6">
           {/* Basic Configuration */}
-          <div className="grid grid-cols-1
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nom de la simulation *
+              </label>
+              <input
+                type="text"
+                {...register('name', { required: 'Le nom est requis' })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="ex: Cavité Re=1000 - Run 1"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre d'époques
+              </label>
+              <input
+                type="number"
+                {...register('epochs', { 
+                  required: 'Requis',
+                  min: { value: 100, message: 'Minimum 100 époques' },
+                  max: { value: 10000, message: 'Maximum 10000 époques' }
+                })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.epochs && (
+                <p className="text-red-500 text-sm mt-1">{errors.epochs.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Physics Parameters */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {physicsModel.physics_type === 'navier_stokes' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre de Reynolds
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    {...register('reynolds', { 
+                      required: 'Requis',
+                      min: { value: 0.1, message: 'Doit être positif' }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Densité
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    {...register('density', { 
+                      required: 'Requis',
+                      min: { value: 0.1, message: 'Doit être positive' }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Viscosité
+                  </label>
+                  <input
+                    type="number"
+                    step="0.001"
+                    {...register('viscosity', { 
+                      required: 'Requis',
+                      min: { value: 0.001, message: 'Doit être positive' }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </>
+            )}
+
+            {physicsModel.physics_type === 'heat_transfer' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Conductivité Thermique
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    {...register('thermal_conductivity', { 
+                      required: 'Requis',
+                      min: { value: 0.1, message: 'Doit être positive' }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Chaleur Spécifique
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    {...register('specific_heat', { 
+                      required: 'Requis',
+                      min: { value: 0.1, message: 'Doit être positive' }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Densité
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    {...register('density', { 
+                      required: 'Requis',
+                      min: { value: 0.1, message: 'Doit être positive' }
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Advanced Configuration */}
+          {advancedConfig && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-200">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Points X (nx)
+                </label>
+                <input
+                  type="number"
+                  {...register('nx', { 
+                    required: 'Requis',
+                    min: { value: 10, message: 'Minimum 10 points' },
+                    max: { value: 500, message: 'Maximum 500 points' }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Points Y (ny)
+                </label>
+                <input
+                  type="number"
+                  {...register('ny', { 
+                    required: 'Requis',
+                    min: { value: 10, message: 'Minimum 10 points' },
+                    max: { value: 500, message: 'Maximum 500 points' }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <p className="text-red-700 text-sm">{error}</p>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-4 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex items-center px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+            >
+              <Play className="h-5 w-5 mr-2" />
+              {loading ? 'Lancement...' : 'Lancer la Simulation'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Running Simulation Controls */}
+      {isRunning && (
+        <div className="flex justify-center space-x-4 pt-4">
+          <button
+            onClick={stopSimulation}
+            className="flex items-center px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            <Square className="h-5 w-5 mr-2" />
+            Arrêter
+          </button>
+        </div>
+      )}
+
+      {/* Completed Simulation */}
+      {isCompleted && currentSimulation && (
+        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-medium text-green-800">Simulation Terminée!</h4>
+            <div className="flex space-x-2">
+              <button
+                onClick={downloadResults}
+                className="flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                <Download className="h-4 w-4 mr-1" />
+                Télécharger
+              </button>
+              <button
+                onClick={resetSimulation}
+                className="flex items-center px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+              >
+                <RefreshCw className="h-4 w-4 mr-1" />
+                Nouvelle
+              </button>
+            </div>
+          </div>
+          <div className="text-sm text-green-700 space-y-1">
+            <p><strong>ID:</strong> {currentSimulation.id}</p>
+            <p><strong>Statut:</strong> Terminé avec succès</p>
+            <p><strong>Durée:</strong> Environ 10 secondes</p>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default SimulationRunner
