@@ -1,17 +1,62 @@
+from pydantic_settings import BaseSettings
+from typing import List, Optional
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
-
-class Settings:
-    PROJECT_NAME: str = "R&D Accelerator API"
+class Settings(BaseSettings):
+    # Application
+    APP_NAME: str = "R&D Accelerator Platform"
     VERSION: str = "1.0.0"
+    DEBUG: bool = False
+    
+    # API
+    API_V1_STR: str = "/api/v1"
+    SECRET_KEY: str = "your-secret-key-here-change-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
     # Supabase
-    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "http://localhost:54321")
-    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "dummy_key")
+    SUPABASE_URL: str = "https://your-project.supabase.co"
+    SUPABASE_KEY: str = "your-supabase-key"
+    SUPABASE_SERVICE_KEY: str = "your-service-key"
     
     # OpenAI
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "dummy_key")
+    OPENAI_API_KEY: str = "your-openai-key"
+    OPENAI_ORGANIZATION: Optional[str] = None
+    
+    # TensorFlow/PyTorch
+    MODEL_CACHE_DIR: str = "./data/pre_trained_models"
+    
+    # CORS
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "https://yourapp.vercel.app"
+    ]
+    
+    # Rate Limiting
+    RATE_LIMIT_PER_MINUTE: int = 60
+    
+    # File Upload
+    MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB
+    UPLOAD_DIR: str = "./data/uploads"
+    
+    # Redis for caching and WebSocket
+    REDIS_URL: str = "redis://localhost:6379"
+    
+    # Cloud Provider Configurations
+    AWS_ACCESS_KEY_ID: Optional[str] = None
+    AWS_SECRET_ACCESS_KEY: Optional[str] = None
+    AWS_REGION: str = "us-east-1"
+    
+    GOOGLE_CLOUD_PROJECT: Optional[str] = None
+    GOOGLE_APPLICATION_CREDENTIALS: Optional[str] = None
+    
+    AZURE_STORAGE_CONNECTION_STRING: Optional[str] = None
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
 
-settings = Settings()
+def get_settings():
+    return Settings()
