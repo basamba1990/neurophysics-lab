@@ -1,14 +1,37 @@
-from fastapi import APIRouter, Depends
-from datetime import datetime, timedelta
+# backend/api/routers/analytics.py
 
-from api.dependencies import CurrentUser
-from models.pydantic_models import UsageMetricsResponse, PerformanceAnalyticsResponse
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Dict, Any
+from backend.models.pydantic_models import UsageMetricsResponse, PerformanceAnalyticsResponse
+from backend.core.security import get_current_active_user
+# Importation simulée du service d'analyse
+# from backend.services.analytics.pinn_performance_dashboard import AnalyticsService 
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/analytics",
+    tags=["Analytics"],
+    # Dépendance simulée pour l'utilisateur
+    # dependencies=[Depends(get_current_active_user)], 
+    responses={404: {"description": "Not found"}},
+)
 
-@router.get("/usage-metrics", response_model=UsageMetricsResponse)
-async def get_usage_metrics(current_user: CurrentUser):
-    # In a real implementation, this would query the database
+# Initialisation du service d'analyse (simulé)
+# analytics_service = AnalyticsService()
+
+# Simulation de l'utilisateur et des données pour éviter les dépendances non résolues
+class MockUser:
+    def __init__(self, organization_id="org_a"):
+        self.organization_id = organization_id
+
+def get_mock_user():
+    return MockUser()
+
+@router.get("/usage", response_model=UsageMetricsResponse)
+async def get_usage_metrics(current_user: Any = Depends(get_mock_user)):
+    """
+    Récupère les métriques d'utilisation pour l'organisation de l'utilisateur.
+    """
+    # Remplacement par des données simulées
     return UsageMetricsResponse(
         pinn_simulations_this_month=15,
         copilot_requests_this_month=45,
@@ -20,9 +43,12 @@ async def get_usage_metrics(current_user: CurrentUser):
         }
     )
 
-@router.get("/performance-analytics", response_model=PerformanceAnalyticsResponse)
-async def get_performance_analytics(current_user: CurrentUser):
-    # In a real implementation, this would aggregate performance data
+@router.get("/performance", response_model=PerformanceAnalyticsResponse)
+async def get_performance_analytics(current_user: Any = Depends(get_mock_user)):
+    """
+    Récupère les analyses de performance des simulations PINN.
+    """
+    # Remplacement par des données simulées
     return PerformanceAnalyticsResponse(
         average_simulation_time=45.2,
         success_rate=0.92,
@@ -34,42 +60,21 @@ async def get_performance_analytics(current_user: CurrentUser):
         }
     )
 
-@router.get("/simulation-metrics")
-async def get_simulation_metrics(current_user: CurrentUser):
-    # Simulation performance metrics
-    return {
-        "total_simulations": 150,
-        "successful_simulations": 138,
-        "failed_simulations": 12,
-        "average_training_time": "45.2s",
-        "convergence_rate": 0.92,
-        "most_common_physics": "Navier-Stokes (65%)",
-        "resource_efficiency": {
-            "gpu_utilization": 78.5,
-            "memory_efficiency": 85.2,
-            "compute_cost_per_simulation": 0.45
+@router.get("/simulation-history/{simulation_id}")
+async def get_simulation_history(simulation_id: str, current_user: Any = Depends(get_mock_user)):
+    """
+    Récupère l'historique détaillé d'une simulation spécifique.
+    """
+    # Remplacement par des données simulées
+    if simulation_id == "sim_001":
+        return {
+            "simulation_id": simulation_id,
+            "status": "COMPLETED",
+            "history": [
+                {"timestamp": "2025-11-26T10:00:00Z", "event": "Simulation started"},
+                {"timestamp": "2025-11-26T10:30:00Z", "event": "Loss reduced to 1e-3"},
+                {"timestamp": "2025-11-26T11:00:00Z", "event": "Simulation COMPLETED"}
+            ]
         }
-    }
-
-@router.get("/cost-analytics")
-async def get_cost_analytics(current_user: CurrentUser):
-    # Cost analysis and projections
-    return {
-        "current_month_costs": {
-            "compute": 1250.50,
-            "storage": 45.75,
-            "ai_services": 89.25,
-            "total": 1385.50
-        },
-        "cost_breakdown": {
-            "pinn_simulations": 65,
-            "copilot_requests": 20, 
-            "digital_twins": 10,
-            "infrastructure": 5
-        },
-        "cost_optimization_suggestions": [
-            "Use spot instances for non-critical simulations",
-            "Implement data compression for large result sets",
-            "Schedule heavy computations during off-peak hours"
-        ]
-    }
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Historique de simulation non trouvé.")

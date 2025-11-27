@@ -1,3 +1,5 @@
+# backend/models/pydantic_models.py
+
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
@@ -142,3 +144,42 @@ class PerformanceAnalyticsResponse(BaseModel):
     success_rate: float
     most_used_physics_models: List[str]
     resource_utilization: Dict[str, float]
+
+# Ajout des modèles pour l'optimisation
+class OptimizationParameter(BaseModel):
+    """Définit un paramètre à optimiser."""
+    name: str
+    initial_value: float
+    bounds: List[float] = Field(..., min_items=2, max_items=2, description="Bornes [min, max].")
+    unit: Optional[str] = None
+
+class OptimizationObjective(BaseModel):
+    """Définit un objectif d'optimisation."""
+    name: str
+    target: str = Field(..., description="'minimize' ou 'maximize'.")
+    weight: float = 1.0
+    # L'expression réelle de l'objectif serait gérée en interne
+
+class OptimizationConstraint(BaseModel):
+    """Définit une contrainte d'optimisation."""
+    name: str
+    type: str = Field(..., description="'inequality' (<=) ou 'equality' (=).")
+    expression: str = Field(..., description="Expression mathématique de la contrainte.")
+    bound: float
+
+class OptimizationRequest(BaseModel):
+    """Modèle pour une nouvelle requête d'optimisation."""
+    simulation_id: str = Field(..., description="ID de la simulation de base pour l'optimisation.")
+    method: str = Field(..., description="Méthode d'optimisation (e.g., 'SLSQP', 'Bayesian').")
+    parameters_to_optimize: List[OptimizationParameter]
+    objectives: List[OptimizationObjective]
+    constraints: List[OptimizationConstraint]
+    config: Dict[str, Any] = Field(..., description="Configuration spécifique à la méthode (e.g., max_iterations).")
+
+class OptimizationResult(BaseModel):
+    """Modèle pour les résultats d'optimisation."""
+    optimization_id: str
+    status: str
+    optimal_parameters: Dict[str, float]
+    optimal_objective_value: float
+    report: Dict[str, Any]
