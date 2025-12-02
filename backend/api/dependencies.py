@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
-from typing import Annotated
+# from typing import Annotated
 from fastapi.security import HTTPBearer
 
-from database.supabase_client import get_supabase
+from database.supabase_client import supabase
 from database.repositories import RepositoryFactory
 from core.security import verify_token
 from models.domain_models import User
@@ -25,9 +25,8 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 def get_repository_factory():
-    supabase = get_supabase()
     return RepositoryFactory(supabase)
 
 # Annotated types for better readability
-CurrentUser = Annotated[User, Depends(get_current_active_user)]
-RepoFactory = Annotated[RepositoryFactory, Depends(get_repository_factory)]
+# CurrentUser = Annotated[User, Depends(get_current_active_user)]
+# RepoFactory = RepositoryFactory
