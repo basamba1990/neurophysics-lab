@@ -1,6 +1,7 @@
+# core/config.py
+
 from pydantic_settings import BaseSettings
 from typing import List, Optional
-import os
 
 class Settings(BaseSettings):
     # Application
@@ -23,7 +24,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = "your-openai-key"
     OPENAI_ORGANIZATION: Optional[str] = None
     
-    # TensorFlow/PyTorch
+    # Models
     MODEL_CACHE_DIR: str = "./data/pre_trained_models"
     
     # CORS
@@ -41,10 +42,10 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB
     UPLOAD_DIR: str = "./data/uploads"
     
-    # Redis for caching and WebSocket
+    # Redis / WebSockets cache
     REDIS_URL: str = "redis://localhost:6379"
     
-    # Cloud Provider Configurations
+    # Cloud providers
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
     AWS_REGION: str = "us-east-1"
@@ -53,10 +54,11 @@ class Settings(BaseSettings):
     GOOGLE_APPLICATION_CREDENTIALS: Optional[str] = None
     
     AZURE_STORAGE_CONNECTION_STRING: Optional[str] = None
-    
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+
 
 def get_settings():
     return Settings()
