@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_KEY: str = "your-service-key"
     
     # OpenAI
-    OPENAI_API_KEY: str = "your-openai-key"
+    OPENAI_API_PINNs_KEY: str = "your-openai-key"
     OPENAI_ORGANIZATION: Optional[str] = None
     
     # Models
