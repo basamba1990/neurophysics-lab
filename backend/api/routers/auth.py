@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer
 from database.supabase_client import get_supabase
 from models.pydantic_models import UserCreate, UserResponse, Token
 from core.security import create_access_token
-from api.dependencies import get_repository_factory, RepoFactory
+from api.dependencies import get_repository_factory, get_current_user
 from core.exceptions import AuthenticationError
 
 router = APIRouter()
@@ -18,7 +18,7 @@ supabase = get_supabase()
 @router.post("/register", response_model=Token)
 async def register(
     user_data: UserCreate, 
-    repo_factory: RepoFactory = Depends(get_repository_factory)
+    repo_factory = Depends(get_repository_factory)
 ):
     # Vérifier si l'utilisateur existe déjà
     existing_user = await repo_factory.users.get_by_email(user_data.email)
@@ -65,7 +65,7 @@ async def register(
 @router.post("/login", response_model=Token)
 async def login(
     user_data: UserCreate,
-    repo_factory: RepoFactory = Depends(get_repository_factory)
+    repo_factory = Depends(get_repository_factory)
 ):
     try:
         # Authentifier avec Supabase
@@ -104,7 +104,7 @@ async def logout():
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user(
-    current_user: UserResponse = Depends(get_repository_factory)
+    current_user = Depends(get_current_user)
 ):
     return current_user
 
