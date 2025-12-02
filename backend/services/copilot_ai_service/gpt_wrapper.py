@@ -13,7 +13,7 @@ class GPTWrapper:
     """Wrapper for OpenAI API with scientific prompt management"""
     
     def __init__(self):
-        self.client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        self.client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_PINNs_KEY)
         self.system_prompts = self._load_system_prompts()
         self.conversation_history = {}
         
