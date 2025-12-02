@@ -20,7 +20,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - .env.example
+      - .env
     volumes:
       - ./frontend:/app
     command: pnpm run dev
