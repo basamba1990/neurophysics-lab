@@ -1,6 +1,7 @@
 import logging
 import sys
 import json
+import os
 from datetime import datetime
 from typing import Any, Dict
 
@@ -36,17 +37,21 @@ def setup_logger(name: str, level: str = "INFO") -> logging.Logger:
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(JSONFormatter())
     
+    # --- FIX : créer le dossier logs s'il n'existe pas ---
+    log_dir = "logs"
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(log_dir, "application.log")
+    # ------------------------------------------------------
+    
     # File handler for errors
-    file_handler = logging.FileHandler('logs/application.log')
+    file_handler = logging.FileHandler(log_path)
     file_handler.setFormatter(JSONFormatter())
     file_handler.setLevel(logging.ERROR)
     
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
     
-    # Prevent propagation to root logger
     logger.propagate = False
-    
     return logger
 
 # Create loggers for different modules
