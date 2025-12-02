@@ -30,6 +30,5 @@ alembic==1.12.1
 psycopg2-binary==2.9.7
 python-socketio==5.9.0
 dask[complete]==2023.8.0
-ray[default]==2.7.0
 GPUtil==1.4.0
 kaleido==0.2.1
