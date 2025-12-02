@@ -1,41 +1,45 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import HTTPBearer
-from supabase import Client
+# app/api/routers/auth.py
 
-from database.supabase_client import supabase
+from fastapi import APIRouter, Depends
+from fastapi.security import HTTPBearer
+from database.supabase_client import get_supabase
 from models.pydantic_models import UserCreate, UserResponse, Token
-from core.security import create_access_token, verify_password, get_password_hash
+from core.security import create_access_token
 from api.dependencies import get_repository_factory, RepoFactory
 from core.exceptions import AuthenticationError
 
 router = APIRouter()
 security = HTTPBearer()
 
+# ✅ Récupérer le client Supabase via la fonction
+supabase = get_supabase()
+
+
 @router.post("/register", response_model=Token)
 async def register(
     user_data: UserCreate, 
     repo_factory: RepoFactory = Depends(get_repository_factory)
 ):
-    # Check if user already exists
+    # Vérifier si l'utilisateur existe déjà
     existing_user = await repo_factory.users.get_by_email(user_data.email)
     if existing_user:
         raise AuthenticationError("User with this email already exists")
     
     try:
-        # Create user in Supabase Auth
+        # Créer l'utilisateur dans Supabase Auth
         auth_response = supabase.auth.sign_up({
             "email": user_data.email,
             "password": user_data.password
         })
         
         if auth_response.user:
-            # Create user profile
+            # Créer le profil utilisateur dans ta base
             user_profile = await repo_factory.users.create(
                 user_data, 
                 auth_response.user.id
             )
             
-            # Create access token
+            # Générer le token d'accès
             access_token = create_access_token(
                 data={"sub": auth_response.user.id}
             )
@@ -57,13 +61,14 @@ async def register(
     except Exception as e:
         raise AuthenticationError(f"Registration failed: {str(e)}")
 
+
 @router.post("/login", response_model=Token)
 async def login(
     user_data: UserCreate,
     repo_factory: RepoFactory = Depends(get_repository_factory)
 ):
     try:
-        # Authenticate with Supabase
+        # Authentifier avec Supabase
         auth_response = supabase.auth.sign_in_with_password({
             "email": user_data.email,
             "password": user_data.password
@@ -90,10 +95,12 @@ async def login(
     except Exception as e:
         raise AuthenticationError(f"Login failed: {str(e)}")
 
+
 @router.post("/logout")
 async def logout():
     supabase.auth.sign_out()
     return {"message": "Successfully logged out"}
+
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user(
@@ -101,7 +108,8 @@ async def get_current_user(
 ):
     return current_user
 
+
 @router.post("/refresh-token")
 async def refresh_token():
-    # Token refresh logic would go here
+    # Endpoint pour rafraîchir le token (à implémenter si nécessaire)
     return {"message": "Token refresh endpoint"}
