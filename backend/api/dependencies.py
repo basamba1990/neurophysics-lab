@@ -1,8 +1,8 @@
-# /app/api/dependencies.py
+# backend/api/dependencies.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer
+from typing import Annotated  # IMPORTANT: Ajoutez cette ligne
 
-# MODIFIEZ CETTE IMPORTATION
 from database.supabase_client import get_supabase
 from database.repositories import RepositoryFactory
 from core.security import verify_token
@@ -30,3 +30,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 def get_repository_factory():
     return RepositoryFactory(supabase)
+
+# DÉCOMMENTEZ ET CORRIGEZ CES LIGNES :
+CurrentUser = Annotated[User, Depends(get_current_active_user)]
+RepoFactory = Annotated[RepositoryFactory, Depends(get_repository_factory)]
