@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any
 from models.pydantic_models import UsageMetricsResponse, PerformanceAnalyticsResponse
-from core.security import get_current_active_user
+from api.dependencies import get_current_active_user
 # Importation simulée du service d'analyse
 # from backend.services.analytics.pinn_performance_dashboard import AnalyticsService 
 
