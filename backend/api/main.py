@@ -54,7 +54,7 @@ setup_exception_handlers(app)
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-app.include_router(organizations.router, prefix="/api/v1/org", tags=["Organizations"])
+app.include_router(organization.router, prefix="/api/v1/org", tags=["Organization"])
 app.include_router(pinn_solver.router, prefix="/api/v1/pinn", tags=["PINN Solver"])
 app.include_router(copilot.router, prefix="/api/v1/copilot", tags=["Scientific Copilot"])
 app.include_router(digital_twins.router, prefix="/api/v1/digital-twins", tags=["Digital Twins"])
