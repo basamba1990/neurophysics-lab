@@ -6,7 +6,7 @@ import time
 from core.config import get_settings
 from api.middleware.error_handling import setup_exception_handlers
 from api.middleware.rate_limiting import limiter
-from api.routers import auth, organizations, pinn_solver, copilot, digital_twins, analytics
+from api.routers import auth, organization, pinn_solver, copilot, digital_twins, analytics
 from database.migrations import run_database_migrations
 
 settings = get_settings()
