@@ -2,12 +2,16 @@
 import { createClient } from '@supabase/supabase-js'
 
 // --- Validate env variables ---
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+// Utiliser les variables VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY
+// Si elles sont manquantes, utiliser les variables SUPABASE_URL et SUPABASE_ANON_KEY (pour la compatibilité avec d'autres conventions)
+// Si toutes sont manquantes, utiliser des valeurs par défaut pour éviter un crash fatal immédiat, mais l'application ne fonctionnera pas.
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL || 'https://your-project.supabase.co'
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY || 'your-anon-key'
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error(
-    "[Supabase] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in .env"
+// Vérification de base pour s'assurer que les clés ne sont pas les placeholders
+if (supabaseUrl.includes('your-project.supabase.co') || supabaseKey.includes('your-anon-key')) {
+  console.error(
+    "[Supabase] ATTENTION: Les variables d'environnement VITE_SUPABASE_URL et/ou VITE_SUPABASE_ANON_KEY ne sont pas définies. L'application utilisera des valeurs par défaut et ne fonctionnera pas correctement."
   );
 }
 
