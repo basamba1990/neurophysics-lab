@@ -1,43 +1,66 @@
+// supabaseClient.js
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
+// --- Validate env variables ---
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error(
+    "[Supabase] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in .env"
+  );
+}
 
-// Auth convenience methods
+// --- Create Supabase client ---
+export const supabase = createClient(supabaseUrl, supabaseKey);
+
+// -------------------------
+// AUTH UTILITIES
+// -------------------------
 export const auth = {
-  get user() {
-    return supabase.auth.getUser()
-  },
-  
-  get session() {
-    return supabase.auth.getSession()
-  },
-  
-  signIn: (email, password) => 
-    supabase.auth.signInWithPassword({ email, password }),
-  
-  signUp: (email, password) => 
-    supabase.auth.signUp({ email, password }),
-  
-  signOut: () => supabase.auth.signOut(),
-  
-  onAuthStateChange: (callback) => 
-    supabase.auth.onAuthStateChange(callback)
-}
+  /** Get current session */
+  getSession: () => supabase.auth.getSession(),
 
-// Storage convenience methods
+  /** Get current user */
+  getUser: () => supabase.auth.getUser(),
+
+  /** Sign in with email + password */
+  signIn: (email, password) =>
+    supabase.auth.signInWithPassword({ email, password }),
+
+  /** Sign up with email + password */
+  signUp: (email, password) =>
+    supabase.auth.signUp({ email, password }),
+
+  /** Sign out */
+  signOut: () => supabase.auth.signOut(),
+
+  /** Listen to auth state changes */
+  onAuthStateChange: (callback) =>
+    supabase.auth.onAuthStateChange(callback),
+};
+
+// -------------------------
+// STORAGE UTILITIES
+// -------------------------
+const bucket = "simulations"; // Change if needed
+
 export const storage = {
-  upload: (path, file) => 
-    supabase.storage.from('simulations').upload(path, file),
-  
-  download: (path) => 
-    supabase.storage.from('simulations').download(path),
-  
-  getPublicUrl: (path) => 
-    supabase.storage.from('simulations').getPublicUrl(path),
-  
-  list: (path) => 
-    supabase.storage.from('simulations').list(path)
-}
+  /** Upload a file */
+  upload: (path, file) =>
+    supabase.storage.from(bucket).upload(path, file, {
+      upsert: true, // optional: overwrite
+    }),
+
+  /** Download a file */
+  download: (path) =>
+    supabase.storage.from(bucket).download(path),
+
+  /** Get public URL */
+  getPublicUrl: (path) =>
+    supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl,
+
+  /** List folder content */
+  list: (path = "") =>
+    supabase.storage.from(bucket).list(path),
+};
