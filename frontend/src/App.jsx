@@ -2,8 +2,7 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 import { AuthProvider } from './hooks/useAuth.jsx'
-import WorkspaceLayout from './components/layout/WorkspaceLayout' 
-// CORRECTION: Ajout de l'extension .jsx à toutes les importations de pages
+import WorkspaceLayout from './components/layout/WorkspaceLayout.jsx'
 import Workspace from './pages/Workspace.jsx'
 import Projects from './pages/Projects.jsx'
 import Simulations from './pages/Simulations.jsx'
