@@ -9,17 +9,17 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.5.2",
+    "@supabase/supabase-js": "^2.38.0",
+    "axios": "^1.5.0",
+    "lucide-react": "^0.288.0",
+    "monaco-editor": "^0.44.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.15.0",
-    "axios": "^1.5.0",
-    "@supabase/supabase-js": "^2.38.0",
-    "lucide-react": "^0.288.0",
-    "react-query": "^3.39.3",
     "react-hook-form": "^7.45.4",
     "react-hot-toast": "^2.4.1",
-    "monaco-editor": "^0.44.0",
-    "@monaco-editor/react": "^4.5.2"
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.15.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
