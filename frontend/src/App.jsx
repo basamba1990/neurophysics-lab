@@ -2,19 +2,18 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 import { AuthProvider } from './hooks/useAuth.jsx'
-// CORRECTION: Remplacer l'importation de 'Layout' qui n'existe pas
-// par l'importation de 'WorkspaceLayout' qui est le composant réel.
 import WorkspaceLayout from './components/layout/WorkspaceLayout' 
-import Workspace from './pages/Workspace'
-import Projects from './pages/Projects'
-import Simulations from './pages/Simulations'
-import Copilot from './pages/Copilot'
-import DigitalTwins from './pages/DigitalTwins'
-import Team from './pages/Team'
-import UsageDashboard from './pages/UsageDashboard'
-import Settings from './pages/Settings'
-import Login from './pages/Login'
-import Register from './pages/Register'
+// CORRECTION: Ajout de l'extension .jsx à toutes les importations de pages
+import Workspace from './pages/Workspace.jsx'
+import Projects from './pages/Projects.jsx'
+import Simulations from './pages/Simulations.jsx'
+import Copilot from './pages/Copilot.jsx'
+import DigitalTwins from './pages/DigitalTwins.jsx'
+import Team from './pages/Team.jsx'
+import UsageDashboard from './pages/UsageDashboard.jsx'
+import Settings from './pages/Settings.jsx'
+import Login from './pages/Login.jsx'
+import Register from './pages/Register.jsx'
 
 function App() {
   return (
@@ -23,7 +22,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/*" element={
-          // CORRECTION: Utiliser WorkspaceLayout à la place de Layout
           <WorkspaceLayout>
             <Routes>
               <Route path="/" element={<Workspace />} />
