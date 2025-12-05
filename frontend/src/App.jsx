@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
-import { AuthProvider } from './hooks/useAuth'
+import { AuthProvider } from './hooks/useAuth.jsx'
 import Layout from './components/layout/Layout'
 import Workspace from './pages/Workspace'
 import Projects from './pages/Projects'
