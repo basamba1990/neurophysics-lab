@@ -10,24 +10,105 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  Folder,
+  Zap
 } from 'lucide-react'
 import apiClient from '../services/api'
-import ResultsVisualization from '../components/solver/ResultsVisualization'
 import SimulationRunner from '../components/solver/SimulationRunner'
+
+// Composant de visualisation simplifié (remplace ResultsVisualization temporairement)
+const SimpleResultsVisualization = ({ simulation }) => {
+  if (!simulation || simulation.status !== 'completed') {
+    return (
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="text-center py-8">
+          <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600">
+            {!simulation 
+              ? "Sélectionnez une simulation" 
+              : "Visualisation disponible après complétion"}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Résultats de simulation
+      </h3>
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <p className="text-sm text-gray-600">Statut</p>
+            <p className="text-lg font-semibold text-green-600">Terminé</p>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg">
+            <p className="text-sm text-gray-600">Temps d'exécution</p>
+            <p className="text-lg font-semibold text-gray-900">
+              {simulation.execution_time || "N/A"}s
+            </p>
+          </div>
+        </div>
+        <div className="border-t pt-4">
+          <h4 className="font-medium text-gray-900 mb-2">Données disponibles</h4>
+          <ul className="space-y-2">
+            <li className="flex items-center text-sm">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              Champ de vitesse
+            </li>
+            <li className="flex items-center text-sm">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              Champ de pression
+            </li>
+            <li className="flex items-center text-sm">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              Métriques de convergence
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const Simulations = () => {
   const [selectedSimulation, setSelectedSimulation] = useState(null)
   const [filter, setFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
 
-  const { data: simulations = [], isLoading, refetch } = useQuery(
-    'simulations',
-    () => apiClient.getSimulations(),
+  // Données de simulation mockées (en attendant l'API)
+  const [simulations, setSimulations] = useState([
     {
-      refetchInterval: 5000 // Poll every 5 seconds for updates
+      id: 'sim-001',
+      name: 'Cavité entraînée - Re=1000',
+      status: 'completed',
+      physics_model_id: 'navier-stokes-1',
+      created_at: '2024-01-15T10:30:00Z',
+      input_parameters: { reynolds: 1000, nx: 50, ny: 50 },
+      execution_time: 45.2
+    },
+    {
+      id: 'sim-002',
+      name: 'Transfert thermique - Plaque chaude',
+      status: 'running',
+      physics_model_id: 'heat-transfer-1',
+      created_at: '2024-01-15T11:15:00Z',
+      input_parameters: { temperature: 300, nx: 40, ny: 40 },
+      execution_time: 120.5
+    },
+    {
+      id: 'sim-003',
+      name: 'Écoulement laminaire - Tube',
+      status: 'pending',
+      physics_model_id: 'navier-stokes-2',
+      created_at: '2024-01-14T14:20:00Z',
+      input_parameters: { reynolds: 500, nx: 60, ny: 30 },
+      execution_time: null
     }
-  )
+  ])
 
   const filteredSimulations = simulations.filter(sim => {
     if (filter !== 'all' && sim.status !== filter) return false
@@ -57,8 +138,46 @@ const Simulations = () => {
 
   const handleRunSimulation = async (simulationData) => {
     try {
-      await apiClient.createSimulation(simulationData)
-      refetch()
+      // Simulation de création
+      const newSim = {
+        id: `sim-${Date.now()}`,
+        name: simulationData.name,
+        status: 'pending',
+        physics_model_id: simulationData.physics_model_id || 'default',
+        created_at: new Date().toISOString(),
+        input_parameters: simulationData.input_parameters || {},
+        execution_time: null
+      }
+      
+      setSimulations(prev => [newSim, ...prev])
+      
+      // Simuler le lancement
+      setTimeout(() => {
+        setSimulations(prev => 
+          prev.map(sim => 
+            sim.id === newSim.id 
+              ? { ...sim, status: 'running' } 
+              : sim
+          )
+        )
+        
+        // Simuler la complétion après 5 secondes
+        setTimeout(() => {
+          setSimulations(prev => 
+            prev.map(sim => 
+              sim.id === newSim.id 
+                ? { 
+                    ...sim, 
+                    status: 'completed', 
+                    execution_time: 42.5,
+                    pinn_predictions: { velocity_field: [], pressure_field: [] }
+                  } 
+                : sim
+            )
+          )
+        }, 5000)
+      }, 1000)
+      
     } catch (error) {
       console.error('Failed to run simulation:', error)
     }
@@ -76,7 +195,7 @@ const Simulations = () => {
         </div>
         <div className="flex space-x-3">
           <button
-            onClick={refetch}
+            onClick={() => window.location.reload()}
             className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             <RefreshCw className="h-5 w-5 mr-2" />
@@ -129,16 +248,13 @@ const Simulations = () => {
           {/* Simulations List */}
           <div className="bg-white rounded-lg shadow">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Simulations Récentes</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Simulations Récentes
+              </h3>
               
-              {isLoading ? (
+              {filteredSimulations.length === 0 ? (
                 <div className="text-center py-8">
-                  <RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400" />
-                  <p className="text-gray-600 mt-2">Chargement des simulations...</p>
-                </div>
-              ) : filteredSimulations.length === 0 ? (
-                <div className="text-center py-8">
-                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto" />
+                  <Folder className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600 mt-2">Aucune simulation trouvée</p>
                 </div>
               ) : (
@@ -155,7 +271,9 @@ const Simulations = () => {
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <h4 className="font-medium text-gray-900">{simulation.name}</h4>
+                          <h4 className="font-medium text-gray-900">
+                            {simulation.name}
+                          </h4>
                           <p className="text-sm text-gray-600 mt-1">
                             Modèle: {simulation.physics_model_id}
                           </p>
@@ -169,7 +287,7 @@ const Simulations = () => {
                         <div className="flex items-center space-x-3">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(simulation.status)}`}>
                             {getStatusIcon(simulation.status)}
-                            <span className="ml-1">{simulation.status}</span>
+                            <span className="ml-1 capitalize">{simulation.status}</span>
                           </span>
                           {simulation.status === 'completed' && (
                             <button
@@ -184,6 +302,19 @@ const Simulations = () => {
                           )}
                         </div>
                       </div>
+                      
+                      {/* Paramètres rapides */}
+                      {simulation.input_parameters && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <div className="flex space-x-4 text-sm">
+                            {Object.entries(simulation.input_parameters).map(([key, value]) => (
+                              <div key={key} className="text-gray-600">
+                                <span className="font-medium">{key}:</span> {value}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -211,23 +342,33 @@ const Simulations = () => {
                     <div className="mt-1">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedSimulation.status)}`}>
                         {getStatusIcon(selectedSimulation.status)}
-                        <span className="ml-1">{selectedSimulation.status}</span>
+                        <span className="ml-1 capitalize">{selectedSimulation.status}</span>
                       </span>
                     </div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-700">Paramètres</label>
-                    <pre className="mt-1 p-3 bg-gray-50 rounded text-sm overflow-auto">
-                      {JSON.stringify(selectedSimulation.input_parameters, null, 2)}
-                    </pre>
+                    <div className="mt-1 p-3 bg-gray-50 rounded text-sm">
+                      <pre className="overflow-auto">
+                        {JSON.stringify(selectedSimulation.input_parameters, null, 2)}
+                      </pre>
+                    </div>
                   </div>
+                  {selectedSimulation.execution_time && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Temps d'exécution
+                      </label>
+                      <p className="mt-1 text-gray-900">
+                        {selectedSimulation.execution_time} secondes
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Results Visualization */}
-              <div className="bg-white rounded-lg shadow">
-                <ResultsVisualization simulation={selectedSimulation} />
-              </div>
+              <SimpleResultsVisualization simulation={selectedSimulation} />
             </>
           ) : (
             <div className="bg-white rounded-lg shadow p-6">
@@ -237,7 +378,7 @@ const Simulations = () => {
                   Sélectionnez une simulation
                 </h3>
                 <p className="mt-2 text-gray-600">
-                  Cliquez sur une simulation dans la liste pour voir ses détails et résultats
+                  Cliquez sur une simulation dans la liste pour voir ses détails
                 </p>
               </div>
             </div>
