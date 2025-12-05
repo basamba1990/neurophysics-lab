@@ -1,27 +1,24 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { auth } from '../services/supabase'
-import apiClient from '../services/api'
+import { auth } from '../services/supabase.js'
+import apiClient from '../services/api.js'
 
 const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 
   useEffect(() => {
-    // Check active session on load
+    // Vérifier la session active au chargement
     const checkSession = async () => {
       try {
-        const { data: { session } } = await auth.session
+        const { data: { session } } = await auth.getSession()
         if (session) {
           setUser(session.user)
-          // Store token for API requests
           localStorage.setItem('access_token', session.access_token)
         }
-      } catch (err) {
-        console.error('Session check failed:', err)
-        setError('Failed to check authentication status')
+      } catch (error) {
+        console.error('Erreur lors de la vérification de session:', error)
       } finally {
         setLoading(false)
       }
@@ -29,16 +26,16 @@ export function AuthProvider({ children }) {
 
     checkSession()
 
-    // Listen for auth state changes
-    const { data: { subscription } } = auth.onAuthStateChange(async (event, session) => {
+    // Écouter les changements d'authentification
+    const { data: { subscription } } = auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null)
+      
       if (session) {
-        setUser(session.user)
         localStorage.setItem('access_token', session.access_token)
-        setError(null)
       } else {
-        setUser(null)
         localStorage.removeItem('access_token')
       }
+      
       setLoading(false)
     })
 
@@ -47,57 +44,63 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      setLoading(true)
-      setError(null)
-      
-      const { data, error } = await auth.signIn(email, password)
+      const { data, error } = await auth.signInWithPassword({
+        email,
+        password,
+      })
       
       if (error) throw error
       
+      // Stocker le token pour les requêtes API
       if (data.session) {
-        setUser(data.user)
         localStorage.setItem('access_token', data.session.access_token)
-        return data
+        setUser(data.user)
       }
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
+      
+      return data
+    } catch (error) {
+      throw new Error(error.message || 'Erreur de connexion')
     }
   }
 
   const register = async (userData) => {
     try {
-      setLoading(true)
-      setError(null)
+      // Créer l'utilisateur avec Supabase Auth
+      const { data: authData, error: authError } = await auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            full_name: userData.fullName,
+            expertise_area: userData.expertiseArea || {}
+          }
+        }
+      })
       
+      if (authError) throw authError
+      
+      // Enregistrer le profil dans la base de données
       const response = await apiClient.register(userData)
       
       if (response.access_token) {
-        setUser(response.user)
         localStorage.setItem('access_token', response.access_token)
+        setUser(response.user)
       }
       
       return response
-    } catch (err) {
-      setError(err.response?.data?.detail || err.message)
-      throw err
-    } finally {
-      setLoading(false)
+    } catch (error) {
+      throw new Error(error.message || 'Erreur lors de l\'inscription')
     }
   }
 
   const logout = async () => {
     try {
       await apiClient.logout()
-      setUser(null)
-      setError(null)
-    } catch (err) {
-      console.error('Logout error:', err)
-      // Still clear local state even if API call fails
+      await auth.signOut()
       setUser(null)
       localStorage.removeItem('access_token')
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error)
     }
   }
 
@@ -107,13 +110,11 @@ export function AuthProvider({ children }) {
     register,
     logout,
     loading,
-    error,
-    clearError: () => setError(null)
   }
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   )
 }
