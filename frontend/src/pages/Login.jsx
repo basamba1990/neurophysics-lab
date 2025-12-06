@@ -8,8 +8,7 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
-  Cpu,
-  Code2
+  Cpu
 } from 'lucide-react'
 
 const Login = () => {
@@ -43,35 +42,34 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4 md:p-8">
+      <div className="max-w-lg w-full">
         {/* Logo et Titre */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center items-center mb-4">
+        <div className="text-center mb-10">
+          <div className="flex justify-center items-center mb-3">
             <div className="relative">
-              <Cpu className="h-12 w-12 text-blue-600" />
-              <Code2 className="h-8 w-8 text-green-600 absolute -bottom-2 -right-2" />
+              <Cpu className="h-10 w-10 text-gray-900" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">
             R&D Accelerator Platform
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-500 text-lg">
             Plateforme d'Ingénierie Accélérée par IA
           </p>
         </div>
 
         {/* Carte de connexion */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="bg-gray-50 rounded-3xl shadow-2xl p-6 md:p-10 border border-gray-100">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
             Connexion
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-500 mb-8">
             Connectez-vous à votre compte pour accéder à la plateforme
           </p>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+            <div className="mb-6 p-4 bg-red-50 border border-red-300 rounded-xl flex items-center">
               <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
               <span className="text-red-700">{error}</span>
             </div>
@@ -80,7 +78,7 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Email
               </label>
               <div className="relative">
@@ -91,14 +89,14 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="votre@email.com"
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-150 ease-in-out"
                 />
               </div>
             </div>
 
             {/* Mot de passe */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Mot de passe
               </label>
               <div className="relative">
@@ -109,7 +107,7 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-150 ease-in-out"
                 />
                 <button
                   type="button"
@@ -124,7 +122,7 @@ const Login = () => {
                 </button>
               </div>
               <div className="mt-2 text-right">
-                <a href="#" className="text-sm text-blue-600 hover:text-blue-700">
+                <a href="#" className="text-sm font-medium text-gray-900 hover:text-blue-600 transition duration-150 ease-in-out">
                   Mot de passe oublié ?
                 </a>
               </div>
@@ -134,7 +132,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full flex items-center justify-center py-3 px-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-900/50 disabled:opacity-50 transition duration-150 ease-in-out"
             >
               {loading ? (
                 <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -157,17 +155,17 @@ const Login = () => {
           {/* Bouton démo */}
           <button
             onClick={handleDemoLogin}
-            className="w-full flex items-center justify-center py-3 px-4 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 mb-4"
+            className="w-full flex items-center justify-center py-3 px-4 border-2 border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition duration-150 ease-in-out mb-4"
           >
             <Cpu className="h-5 w-5 mr-2" />
             Accéder à la version démo
           </button>
 
           {/* Lien d'inscription */}
-          <div className="text-center mt-8">
-            <p className="text-gray-600">
+          <div className="text-center mt-6">
+            <p className="text-gray-500">
               Pas encore de compte ?{' '}
-              <Link to="/register" className="font-medium text-blue-600 hover:text-blue-700">
+              <Link to="/register" className="font-semibold text-gray-900 hover:text-blue-600 transition duration-150 ease-in-out">
                 S'inscrire gratuitement
               </Link>
             </p>
@@ -175,14 +173,14 @@ const Login = () => {
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="mt-10 text-center">
+          <p className="text-sm text-gray-500 font-medium">
             © 2024 R&D Accelerator Platform. Tous droits réservés.
           </p>
-          <div className="mt-2 flex justify-center space-x-6 text-xs text-gray-500">
-            <a href="#" className="hover:text-gray-700">Conditions d'utilisation</a>
-            <a href="#" className="hover:text-gray-700">Politique de confidentialité</a>
-            <a href="#" className="hover:text-gray-700">Support</a>
+          <div className="mt-4 flex justify-center space-x-6 text-xs text-gray-500">
+            <a href="#" className="hover:text-gray-900 transition duration-150 ease-in-out">Conditions d'utilisation</a>
+            <a href="#" className="hover:text-gray-900 transition duration-150 ease-in-out">Politique de confidentialité</a>
+            <a href="#" className="hover:text-gray-900 transition duration-150 ease-in-out">Support</a>
           </div>
         </div>
       </div>

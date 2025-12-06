@@ -11,7 +11,8 @@ import {
   Eye,
   EyeOff,
   CheckCircle,
-  XCircle
+  XCircle,
+  Cpu
 } from 'lucide-react'
 
 const Register = () => {
@@ -128,16 +129,16 @@ const Register = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
             <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Inscription réussie !
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-500 mb-6">
               Votre compte a été créé avec succès. Vous allez être redirigé vers la plateforme.
             </p>
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
@@ -148,29 +149,34 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 md:p-8">
+      <div className="max-w-3xl w-full">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="text-center mb-10">
+          <div className="flex justify-center items-center mb-3">
+            <div className="relative">
+              <Cpu className="h-10 w-10 text-gray-900" />
+            </div>
+          </div>
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">
             Créer votre compte R&D Accelerator
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-500 text-lg">
             Rejoignez la plateforme d'ingénierie accélérée par IA
           </p>
         </div>
 
         {/* Formulaire */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-10 border border-gray-100">
           <div className="flex items-center mb-6">
-            <UserPlus className="h-6 w-6 text-blue-600 mr-2" />
-            <h2 className="text-xl font-bold text-gray-900">
+            <UserPlus className="h-6 w-6 text-gray-900 mr-2" />
+            <h2 className="text-2xl font-bold text-gray-900">
               Informations du compte
             </h2>
           </div>
 
           {errors.submit && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+            <div className="mb-6 p-4 bg-red-50 border border-red-300 rounded-xl flex items-center">
               <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
               <span className="text-red-700">{errors.submit}</span>
             </div>
@@ -180,7 +186,7 @@ const Register = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Nom complet */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Nom complet *
                 </label>
                 <div className="relative">
@@ -191,19 +197,22 @@ const Register = () => {
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="Prénom Nom"
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.fullName ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition duration-150 ease-in-out ${
+                      errors.fullName ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-600'
                     }`}
                   />
                 </div>
                 {errors.fullName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <XCircle className="h-4 w-4 mr-1" />
+                    {errors.fullName}
+                  </p>
                 )}
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Email professionnel *
                 </label>
                 <div className="relative">
@@ -214,19 +223,22 @@ const Register = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="votre@email.com"
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition duration-150 ease-in-out ${
+                      errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-600'
                     }`}
                   />
                 </div>
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <XCircle className="h-4 w-4 mr-1" />
+                    {errors.email}
+                  </p>
                 )}
               </div>
 
               {/* Mot de passe */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Mot de passe *
                 </label>
                 <div className="relative">
@@ -237,8 +249,8 @@ const Register = () => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 transition duration-150 ease-in-out ${
+                      errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-600'
                     }`}
                   />
                   <button
@@ -254,7 +266,10 @@ const Register = () => {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <XCircle className="h-4 w-4 mr-1" />
+                    {errors.password}
+                  </p>
                 )}
                 {formData.password && (
                   <div className="mt-2">
@@ -283,7 +298,7 @@ const Register = () => {
 
               {/* Confirmation mot de passe */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Confirmer le mot de passe *
                 </label>
                 <div className="relative">
@@ -294,8 +309,8 @@ const Register = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 ${
-                      errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 transition duration-150 ease-in-out ${
+                      errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-600'
                     }`}
                   />
                   <button
@@ -311,19 +326,19 @@ const Register = () => {
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
-                )}
-                {formData.confirmPassword && formData.password === formData.confirmPassword && (
-                  <p className="mt-1 text-sm text-green-600 flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    Les mots de passe correspondent
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <XCircle className="h-4 w-4 mr-1" />
+                    {errors.confirmPassword}
                   </p>
                 )}
               </div>
+            </div>
 
-              {/* Expertise */}
+            {/* Expertise et Organisation */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Domaine d'expertise */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Domaine d'expertise
                 </label>
                 <div className="relative">
@@ -332,7 +347,7 @@ const Register = () => {
                     name="expertise"
                     value={formData.expertise}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-150 ease-in-out appearance-none bg-white"
                   >
                     <option value="">Sélectionnez votre expertise</option>
                     {expertiseOptions.map((option) => (
@@ -341,22 +356,28 @@ const Register = () => {
                       </option>
                     ))}
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  </div>
                 </div>
               </div>
 
               {/* Organisation */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Organisation
                 </label>
-                <input
-                  type="text"
-                  name="organization"
-                  value={formData.organization}
-                  onChange={handleChange}
-                  placeholder="Votre entreprise / université"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="relative">
+                  <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    type="text"
+                    name="organization"
+                    value={formData.organization}
+                    onChange={handleChange}
+                    placeholder="Votre entreprise / université"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-150 ease-in-out"
+                  />
+                </div>
               </div>
             </div>
 
@@ -365,19 +386,20 @@ const Register = () => {
               <input
                 type="checkbox"
                 id="terms"
-                className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mt-1"
+                name="terms"
                 required
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-1"
               />
-              <label htmlFor="terms" className="ml-2 text-sm text-gray-600">
+              <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
                 J'accepte les{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700">
+                <a href="#" className="font-medium text-gray-900 hover:text-blue-600 transition duration-150 ease-in-out">
                   conditions d'utilisation
                 </a>{' '}
                 et la{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700">
+                <a href="#" className="font-medium text-gray-900 hover:text-blue-600 transition duration-150 ease-in-out">
                   politique de confidentialité
-                </a>
-                . *
+                </a>{' '}
+                *
               </label>
             </div>
 
@@ -385,7 +407,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full flex items-center justify-center py-3 px-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-900/50 disabled:opacity-50 transition duration-150 ease-in-out"
             >
               {loading ? (
                 <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -399,44 +421,26 @@ const Register = () => {
           </form>
 
           {/* Lien de connexion */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
+          <div className="text-center mt-8">
+            <p className="text-gray-500">
               Vous avez déjà un compte ?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-700">
+              <Link to="/login" className="font-semibold text-gray-900 hover:text-blue-600 transition duration-150 ease-in-out">
                 Se connecter
               </Link>
             </p>
           </div>
         </div>
 
-        {/* Avantages */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-lg shadow text-center">
-            <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-blue-600 font-bold">🚀</span>
-            </div>
-            <h4 className="font-medium text-gray-900">Simulations accélérées</h4>
-            <p className="text-sm text-gray-600 mt-1">Rapides et précises</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow text-center">
-            <div className="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-green-600 font-bold">🤖</span>
-            </div>
-            <h4 className="font-medium text-gray-900">Copilot scientifique</h4>
-            <p className="text-sm text-gray-600 mt-1">IA pour votre code</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow text-center">
-            <div className="h-10 w-10 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-purple-600 font-bold">👥</span>
-            </div>
-            <h4 className="font-medium text-gray-900">Collaboration</h4>
-            <p className="text-sm text-gray-600 mt-1">Travail d'équipe optimisé</p>
-          </div>
-        </div>
-
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>© 2024 R&D Accelerator Platform. Pour les ingénieurs et scientifiques.</p>
+        <div className="mt-10 text-center">
+          <p className="text-sm text-gray-500 font-medium">
+            © 2024 R&D Accelerator Platform. Tous droits réservés.
+          </p>
+          <div className="mt-4 flex justify-center space-x-6 text-xs text-gray-500">
+            <a href="#" className="hover:text-gray-900 transition duration-150 ease-in-out">Conditions d'utilisation</a>
+            <a href="#" className="hover:text-gray-900 transition duration-150 ease-in-out">Politique de confidentialité</a>
+            <a href="#" className="hover:text-gray-900 transition duration-150 ease-in-out">Support</a>
+          </div>
         </div>
       </div>
     </div>
