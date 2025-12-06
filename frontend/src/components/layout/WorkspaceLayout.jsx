@@ -14,7 +14,7 @@ const WorkspaceLayout = ({ children }) => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Sidebar */}
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
@@ -23,9 +23,10 @@ const WorkspaceLayout = ({ children }) => {
         <Header 
           onMenuClick={() => setSidebarOpen(!sidebarOpen)} 
           sidebarOpen={sidebarOpen}
+          // Le bouton de menu est géré dans Header.jsx maintenant
         />
         
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>
       </div>

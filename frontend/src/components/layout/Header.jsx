@@ -1,12 +1,21 @@
 import React from 'react'
-import { Bell, User } from 'lucide-react'
+import { Bell, User, Menu, X } from 'lucide-react'
 
-const Header = () => {
+
+const Header = ({ onMenuClick, sidebarOpen }) => {
   return (
-    <header className="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-6">
-      <div className="text-lg font-medium text-gray-800">
-        {/* Le titre de la page actuelle pourrait être affiché ici */}
-        Tableau de Bord
+    <header className="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-4 md:px-6">
+      <div className="flex items-center">
+        <button 
+          onClick={onMenuClick} 
+          className="p-2 mr-4 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors md:hidden"
+        >
+          {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+        <div className="text-lg font-medium text-gray-800">
+          {/* Le titre de la page actuelle pourrait être affiché ici */}
+          R&D Accelerator
+        </div>
       </div>
       <div className="flex items-center space-x-4">
         <button className="p-2 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors">
