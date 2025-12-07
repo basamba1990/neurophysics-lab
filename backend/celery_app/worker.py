@@ -1,6 +1,6 @@
 from celery import Celery
-from backend.core.config import get_settings
-from backend.utils.logger import logger
+from core.config import get_settings
+from utils.logger import logger
 
 settings = get_settings()
 
@@ -10,9 +10,9 @@ app = Celery(
     broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND,
     include=[
-        'backend.celery_app.pinn_tasks',
-        'backend.celery_app.copilot_tasks',
-        'backend.celery_app.optimization_tasks'
+        'celery_app.pinn_tasks',
+        'celery_app.copilot_tasks',
+        'celery_app.optimization_tasks'
     ]
 )
 
