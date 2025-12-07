@@ -1,8 +1,8 @@
 from typing import Dict, Any
-from backend.utils.logger import logger
+from utils.logger import logger
 # Importation simulée des tâches Celery
-# from backend.celery_app.pinn_tasks import run_pinn_training
-# from backend.celery_app.optimization_tasks import run_optimization
+# from celery_app.pinn_tasks import run_pinn_training
+# from celery_app.optimization_tasks import run_optimization
 
 class TaskDispatcher:
     """
