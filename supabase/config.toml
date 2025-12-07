@@ -1,0 +1,135 @@
+[functions]
+# Configuration des Edge Functions pour NeuroPhysics Lab
+
+# Orchestrateur principal
+[functions.neurophysics-orchestrator]
+path = "./neurophysics-orchestrator"
+max_duration = 300  # 5 minutes maximum
+region = "eu-west-1"
+memory = 512  # 512MB
+runtime = "deno"
+entrypoint = "index.ts"
+
+# Scientific Copilot
+[functions.scientific-copilot]
+path = "./scientific-copilot"
+max_duration = 180  # 3 minutes
+region = "eu-west-1"
+memory = 512
+runtime = "deno"
+entrypoint = "index.ts"
+
+# Vector Context Management
+[functions.vector-context]
+path = "./vector-context"
+max_duration = 120  # 2 minutes
+region = "eu-west-1"
+memory = 1024  # 1GB pour les embeddings
+runtime = "deno"
+entrypoint = "index.ts"
+
+# Configuration des secrets
+[secrets]
+# Clés API (à définir dans l'interface Supabase)
+OPENAI_API_PINNs_KEY = "required"
+SUPABASE_SERVICE_ROLE_KEY = "required"
+SUPABASE_URL = "required"
+
+# Configuration des CORS
+[cors]
+allowed_origins = [
+  "http://localhost:3000",
+  "https://neurophysics-lab.vercel.app",
+  "https://*.vercel.app"
+]
+allowed_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+allowed_headers = [
+  "Authorization",
+  "Content-Type",
+  "X-Client-Info",
+  "apikey"
+]
+allow_credentials = true
+
+# Configuration du logging
+[logging]
+level = "info"  # debug, info, warn, error
+format = "json"
+
+# Configuration de la sécurité
+[security]
+# Rate limiting par défaut
+rate_limit = {
+  requests_per_second = 10,
+  burst_size = 50
+}
+
+# Configuration des dépendances
+[dependencies]
+# Dependencies for all functions
+common = [
+  "https://deno.land/std@0.168.0/http/server.ts",
+  "jsr:@supabase/supabase-js@2",
+  "https://esm.sh/openai@4.20.1"
+]
+
+# Monitoring
+[monitoring]
+# Logs retention
+log_retention_days = 30
+# Error tracking
+capture_errors = true
+# Performance metrics
+collect_metrics = true
+
+# Network configuration
+[network]
+# Timeouts
+connect_timeout = 30
+read_timeout = 300
+write_timeout = 300
+
+# VPC configuration (si nécessaire)
+[vpc]
+enabled = false
+# subnet_ids = []
+
+# Environment spécifique
+[environments]
+# Configuration développement
+[environments.dev]
+variables = {
+  ENVIRONMENT = "development",
+  DEBUG = "true",
+  LOG_LEVEL = "debug"
+}
+
+# Configuration production
+[environments.prod]
+variables = {
+  ENVIRONMENT = "production",
+  DEBUG = "false",
+  LOG_LEVEL = "info"
+}
+
+# Configuration des triggers
+[triggers]
+# Déclencheurs automatiques pour le nettoyage
+[triggers.cleanup]
+function = "vector-context"
+schedule = "0 2 * * *"  # Tous les jours à 2h du matin
+payload = { "action": "cleanup-old-contexts", "days": 90 }
+
+# Déclencheur pour les backups
+[triggers.backup]
+function = "vector-context"
+schedule = "0 3 * * 0"  # Tous les dimanches à 3h
+payload = { "action": "export-contexts" }
+
+# Health checks
+[health_checks]
+path = "/health"
+interval = 60  # vérification toutes les minutes
+timeout = 10
+healthy_threshold = 2
+unhealthy_threshold = 3
