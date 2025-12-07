@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Dict, Any
-from backend.orchestration.orchestrator import orchestrator
-from backend.utils.logger import logger
-# from backend.api.dependencies import get_current_user # Dépendance simulée
+# Import relatif (si vous ne lancez pas depuis la racine du projet)
+from orchestration.orchestrator import orchestrator
+from utils.logger import logger
+# from api.dependencies import get_current_user # Dépendance simulée
 
 router = APIRouter(
     prefix="/orchestrator",
