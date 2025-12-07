@@ -1,5 +1,5 @@
 from typing import Dict, Any, Optional
-from backend.utils.logger import logger
+from utils.logger import logger
 # Importation simulée du service de base de données vectorielle
 # from backend.services.database import VectorDBService 
 
