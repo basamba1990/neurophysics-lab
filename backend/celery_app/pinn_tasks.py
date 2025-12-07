@@ -1,5 +1,5 @@
 from .worker import app
-from backend.utils.logger import logger
+from utils.logger import logger
 from typing import Dict, Any
 
 @app.task(name="pinn_tasks.run_pinn_training")
