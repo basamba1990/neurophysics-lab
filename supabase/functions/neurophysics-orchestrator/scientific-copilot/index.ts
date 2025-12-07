@@ -1,32 +1,38 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { OpenAI } from "https://deno.land/x/openai@v4.38.5/mod.ts";
+import OpenAI from "npm:openai@4.8.0";
 
-// Fonction Edge pour le Scientific Copilot
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
   try {
-    const { request, context } = await req.json();
-    
-    // Initialisation du client OpenAI (utilise la clé d'environnement)
-    const openai = new OpenAI();
+    const body = await req.json();
+    const request = body.request;
+    const context = body.context;
+
+    const openaiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!openaiKey) {
+      throw new Error("OPENAI_API_KEY not set in environment");
+    }
+
+    const client = new OpenAI({ apiKey: openaiKey });
 
     const systemPrompt = `
-      Vous êtes le Scientific Copilot, un assistant expert en neurophysique et en simulation PINN.
-      Analysez la requête de l'utilisateur et le contexte fourni pour générer une réponse concise et technique.
-      Contexte: ${JSON.stringify(context)}
-    `;
+Vous êtes le Scientific Copilot, un assistant expert en neurophysique et en simulation PINN.
+Analysez la requête de l'utilisateur et le contexte fourni pour générer une réponse concise et technique.
+Contexte: ${JSON.stringify(context)}
+`;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Modèle rapide pour les fonctions Edge
+    const completion = await client.chat.completions.create({
+      model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: request },
+        { role: "user", content: String(request) },
       ],
       max_tokens: 512,
     });
 
+    const message = completion.choices?.[0]?.message?.content ?? "";
+
     const result = {
       status: "success",
-      response: completion.choices[0].message.content,
+      response: message,
       model: "gpt-4o-mini",
     };
 
@@ -34,8 +40,8 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json" },
       status: 200,
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error?.message ?? String(error) }), {
       headers: { "Content-Type": "application/json" },
       status: 400,
     });
