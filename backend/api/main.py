@@ -6,7 +6,7 @@ import time
 from core.config import get_settings
 from api.middleware.error_handling import setup_exception_handlers
 from api.middleware.rate_limiting import limiter
-from api.routers import auth, organization, pinn_solver, copilot, digital_twins, analytics
+from api.routers import auth, organization, pinn_solver, copilot, digital_twins, analytics, orchestrator, async_tasks, vector_db
 from database.migrations import run_database_migrations
 
 settings = get_settings()
@@ -59,6 +59,9 @@ app.include_router(pinn_solver.router, prefix="/api/v1/pinn", tags=["PINN Solver
 app.include_router(copilot.router, prefix="/api/v1/copilot", tags=["Scientific Copilot"])
 app.include_router(digital_twins.router, prefix="/api/v1/digital-twins", tags=["Digital Twins"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
+app.include_router(orchestrator.router, prefix="/api/v1", tags=["Orchestrator"])
+app.include_router(async_tasks.router, prefix="/api/v1", tags=["Asynchronous Tasks"])
+app.include_router(vector_db.router, prefix="/api/v1", tags=["Vector Database"])
 
 @app.get("/")
 async def root():
