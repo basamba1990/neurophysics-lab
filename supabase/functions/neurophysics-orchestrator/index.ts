@@ -1,160 +1,368 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.0";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { OpenAI } from "https://esm.sh/openai@4.20.1"
 
-// --- Configuration ---
-const OPENAI_API_KEY = Deno.env.get('OPENAI_API_PINNs_KEY');
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_KEY');
-
-if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-  throw new Error("Missing required environment variables.");
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+// PROMPT FONDATEUR NEUROPHYSICS LAB
+const NEUROPHYSICS_ORCHESTRATOR_PROMPT = `Tu es l'IA principale de NeuroPhysics Lab, une plateforme scientifique avancée spécialisée en simulations physiques, analyse neuro-computationale, calcul scientifique et intelligence artificielle.
 
-// --- Fonctions Utilitaires ---
+OBJECTIF : Fournir des résultats ultra fiables, scientifiquement cohérents, rapides, et présentés de manière professionnelle.
 
-/**
- * Appelle l'API OpenAI pour déterminer l'intention et les paramètres.
- * @param systemPrompt Le prompt système (le rôle de l'architecte IA).
- * @param userData Les données utilisateur (la requête).
- * @returns L'objet de décision de l'IA.
- */
-async function callOpenAI(systemPrompt: string, userData: object): Promise<{ intent: string, params: object }> {
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: "gpt-4", // Utilisation de gpt-4 pour une meilleure fiabilité d'orchestration
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: JSON.stringify(userData) }
-      ],
-      temperature: 0.1, // Faible température pour la cohérence scientifique et la prise de décision
-      response_format: { type: "json_object" } // Demande de réponse JSON structurée
-    })
-  });
+MISSION PRINCIPALE :
+1. Analyser précisément la question ou les données fournies
+2. Identifier le domaine scientifique concerné (physique, mathématiques, neuro-IA, data science, etc.)
+3. Fournir une réponse robuste avec raisonnement rigoureux, formules mathématiques correctes, exemples clairs
+4. Proposer des améliorations et approfondissements scientifiques
+5. Éviter toute approximation non justifiée
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
-  }
-
-  const data = await response.json();
-  const content = data.choices[0].message.content;
-  
-  try {
-    // L'IA doit retourner un objet JSON de la forme { intent: "...", params: { ... } }
-    return JSON.parse(content);
-  } catch (e) {
-    console.error("Failed to parse OpenAI response as JSON:", content);
-    throw new Error("Invalid JSON response from AI model.");
-  }
-}
-
-// --- Prompt Système pour l'Orchestrateur ---
-// Ce prompt est une version condensée et orientée action du prompt fourni par l'utilisateur.
-const ORCHESTRATOR_SYSTEM_PROMPT = `
-Tu es l'Architecte IA du NeuroPhysics Lab. Ton rôle est d'analyser la requête utilisateur et de décider de l'action la plus appropriée à exécuter.
-Tu dois retourner un objet JSON strict avec deux clés : "intent" (l'action à prendre) et "params" (les paramètres nécessaires à cette action).
-
-**Intents possibles :**
-1. "PINN_SIMULATION": L'utilisateur demande une simulation physique ou une résolution d'équation différentielle nécessitant un calcul intensif.
-2. "CODE_ANALYSIS": L'utilisateur demande une analyse, une correction ou une génération de code.
-3. "GENERAL_QUERY": L'utilisateur pose une question théorique ou générale ne nécessitant pas de calcul intensif ou d'analyse de code.
-
-**Format de sortie JSON strict :**
+FORMAT DE RÉPONSE EN JSON :
 {
-  "intent": "PINN_SIMULATION" | "CODE_ANALYSIS" | "GENERAL_QUERY",
-  "params": { /* Les paramètres pertinents pour l'intent */ }
-}
+  "analysis": {
+    "domain": string,
+    "hypotheses": string[],
+    "complexity": "LOW|MEDIUM|HIGH",
+    "scientific_context": string
+  },
+  "execution_plan": {
+    "steps": Array<{
+      "step_id": string,
+      "engine": "PINN_SOLVER|CODE_COPILOT|DIGITAL_TWIN|DATA_ANALYSIS|PHYSICS_VALIDATION",
+      "task": string,
+      "priority": number,
+      "estimated_duration": number,
+      "dependencies": string[],
+      "parameters": object
+    }>
+  },
+  "scientific_validation": {
+    "assumptions_to_verify": string[],
+    "potential_errors": string[],
+    "validation_methods": string[]
+  },
+  "expert_recommendations": {
+    "optimizations": string[],
+    "extensions": string[],
+    "professional_advice": string
+  }
+}`
 
-**Règles de décision :**
-- Si la requête mentionne "simulation", "résoudre équation", "modélisation", ou des termes de physique/ingénierie nécessitant un calcul lourd, utilise "PINN_SIMULATION" et extrait les paramètres de simulation (ex: 'model_type', 'boundary_conditions', 'iterations').
-- Si la requête contient du code ou demande une "correction de bug", "optimisation de code", "génération de fonction", utilise "CODE_ANALYSIS" et inclus le code ou la description du code dans les paramètres.
-- Sinon, utilise "GENERAL_QUERY".
-
-**Exemple pour PINN_SIMULATION :**
-Requête: "Lancez une simulation de Navier-Stokes pour un écoulement laminaire avec 1000 itérations."
-JSON: { "intent": "PINN_SIMULATION", "params": { "model_type": "NavierStokes", "flow_type": "laminar", "iterations": 1000 } }
-`;
-
-// --- Gestionnaire de Requêtes (Edge Function) ---
 serve(async (req) => {
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
+  // Handle CORS
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const { user_query, user_data } = await req.json();
+    const { query, project_id, user_id, context_data, files = [] } = await req.json()
+
+    // Initialisation clients
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
+
+    const openai = new OpenAI({
+      apiKey: Deno.env.get('OPENAI_API_PINNs_KEY') ?? '',
+    })
+
+    // ÉTAPE 1 : Récupération du contexte vectoriel
+    const context = await retrieveVectorContext(supabase, query, project_id)
+
+    // ÉTAPE 2 : Analyse par le LLM avec le prompt NeuroPhysics
+    const aiAnalysis = await analyzeWithNeuroPhysicsAI(openai, {
+      query,
+      context,
+      files
+    })
+
+    // ÉTAPE 3 : Exécution parallèle orchestrée
+    const executionResults = await executeOrchestratedPlan(
+      supabase,
+      aiAnalysis.execution_plan,
+      {
+        query,
+        project_id,
+        user_id,
+        ai_analysis: aiAnalysis
+      }
+    )
+
+    // ÉTAPE 4 : Synthèse et validation scientifique
+    const finalSynthesis = await synthesizeResults(
+      openai,
+      aiAnalysis,
+      executionResults
+    )
+
+    // ÉTAPE 5 : Sauvegarde pour traçabilité
+    await saveOrchestrationTrace(supabase, {
+      project_id,
+      user_id,
+      original_query: query,
+      ai_analysis: aiAnalysis,
+      execution_results: executionResults,
+      final_synthesis: finalSynthesis
+    })
+
+    // Réponse structurée professionnelle
+    return new Response(
+      JSON.stringify({
+        success: true,
+        timestamp: new Date().toISOString(),
+        scientific_report: finalSynthesis.scientific_report,
+        execution_summary: {
+          total_steps: aiAnalysis.execution_plan.steps.length,
+          completed_steps: executionResults.filter(r => r.status === 'completed').length,
+          estimated_completion_time: finalSynthesis.estimated_completion_time
+        },
+        next_steps: finalSynthesis.recommended_next_steps,
+        data_references: {
+          context_id: context.context_id,
+          orchestration_id: finalSynthesis.orchestration_id
+        }
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      }
+    )
+
+  } catch (error) {
+    console.error('Erreur orchestration:', error)
     
-    if (!user_query) {
-      return new Response(JSON.stringify({ error: "Missing 'user_query' in request body." }), { status: 400 });
-    }
-
-    // 1. Appel à l'IA pour l'orchestration
-    const orchestration_decision = await callOpenAI(ORCHESTRATOR_SYSTEM_PROMPT, { query: user_query, data: user_data });
-    const { intent, params } = orchestration_decision;
-
-    // 2. Traitement basé sur l'intention
-    switch (intent) {
-      case "PINN_SIMULATION": {
-        // Générer un ID unique pour le suivi
-        const orchestration_id = crypto.randomUUID();
-        
-        // Insérer la tâche dans la table de la base de données (Celery va la lire)
-        // NOTE: Ceci suppose que vous avez configuré un mécanisme pour que Celery lise cette table
-        // ou que vous utilisiez une file d'attente de messages (Redis/RabbitMQ) que Celery écoute.
-        // Pour la simplicité de l'exemple Supabase, nous utilisons une table.
-        const { error } = await supabase.from('orchestration_queue').insert({
-          orchestration_id: orchestration_id,
-          task_type: 'pinn.tasks.start_simulation', // Nom de la tâche Celery
-          task_params: params,
-          status: 'QUEUED',
-          created_at: new Date().toISOString()
-        });
-
-        if (error) throw error;
-
-        return new Response(JSON.stringify({ 
-          status: "TASK_QUEUED", 
-          orchestration_id: orchestration_id,
-          message: "Simulation de calcul intensif mise en file d'attente pour traitement asynchrone."
-        }), { status: 202, headers: { "Content-Type": "application/json" } });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+        scientific_advice: "Veuillez reformuler votre requête avec plus de détails scientifiques ou contacter l'équipe de support."
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500
       }
+    )
+  }
+})
 
-      case "CODE_ANALYSIS": {
-        // Pour l'analyse de code, nous pouvons faire un appel direct à l'IA pour une réponse rapide
-        // ou le mettre en file d'attente si l'analyse est très longue.
-        // Ici, nous faisons un appel direct pour une réponse rapide.
-        const CODE_ANALYSIS_PROMPT = `En tant qu'expert en code scientifique, analyse le code fourni dans les 'params' et retourne une version corrigée, optimisée et commentée, sans aucune explication supplémentaire.`;
-        const result = await callOpenAI(CODE_ANALYSIS_PROMPT, params);
-        
-        return new Response(JSON.stringify({ 
-          status: "COMPLETED", 
-          result: result.intent, // Le résultat de l'analyse est dans le champ 'intent' de la réponse de l'IA
-          message: "Analyse de code complétée."
-        }), { status: 200, headers: { "Content-Type": "application/json" } });
-      }
+// Fonction : Récupération du contexte vectoriel
+async function retrieveVectorContext(supabase: any, query: string, projectId?: string) {
+  try {
+    // Génération d'embedding pour la recherche sémantique
+    const { data: embeddings } = await supabase.functions.invoke('generate-embeddings', {
+      body: { text: query }
+    })
 
-      case "GENERAL_QUERY":
-      default: {
-        // Pour les requêtes générales, nous faisons un appel direct à l'IA pour une réponse immédiate.
-        const GENERAL_PROMPT = `En tant qu'IA principale de NeuroPhysics Lab, réponds à la requête utilisateur avec une rigueur scientifique absolue, en utilisant des formules, des concepts clairs et un ton professionnel.`;
-        const result = await callOpenAI(GENERAL_PROMPT, params);
-        
-        return new Response(JSON.stringify({ 
-          status: "COMPLETED", 
-          result: result.intent, // Le résultat de la requête est dans le champ 'intent' de la réponse de l'IA
-          message: "Réponse scientifique fournie."
-        }), { status: 200, headers: { "Content-Type": "application/json" } });
-      }
+    // Recherche de contexte similaire
+    const { data: similarContexts } = await supabase.rpc('match_project_context', {
+      query_embedding: embeddings.embedding,
+      match_threshold: 0.7,
+      match_count: 5,
+      project_id: projectId
+    })
+
+    return {
+      context_id: `ctx_${Date.now()}`,
+      similar_problems: similarContexts || [],
+      embedding: embeddings.embedding,
+      has_historical_data: (similarContexts?.length || 0) > 0
     }
   } catch (error) {
-    console.error("Orchestrator Error:", error.message);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
+    console.warn('Erreur récupération contexte:', error)
+    return { context_id: `ctx_${Date.now()}`, similar_problems: [], has_historical_data: false }
   }
-});
+}
+
+// Fonction : Analyse avec IA NeuroPhysics
+async function analyzeWithNeuroPhysicsAI(openai: OpenAI, data: any) {
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      {
+        role: "system",
+        content: NEUROPHYSICS_ORCHESTRATOR_PROMPT
+      },
+      {
+        role: "user",
+        content: JSON.stringify({
+          user_query: data.query,
+          available_context: data.context,
+          attached_files: data.files,
+          available_engines: [
+            { name: "PINN_SOLVER", capabilities: ["navier_stokes", "heat_transfer", "structural_analysis"] },
+            { name: "CODE_COPILOT", capabilities: ["code_analysis", "modernization", "debugging", "physics_validation"] },
+            { name: "DIGITAL_TWIN", capabilities: ["optimization", "performance_monitoring", "scenario_analysis"] },
+            { name: "DATA_ANALYSIS", capabilities: ["statistical_analysis", "visualization", "trend_detection"] }
+          ]
+        })
+      }
+    ],
+    temperature: 0.1, // Faible pour la cohérence scientifique
+    max_tokens: 2000,
+    response_format: { type: "json_object" }
+  })
+
+  const analysis = JSON.parse(completion.choices[0].message.content || '{}')
+  
+  // Validation de la structure
+  if (!analysis.analysis || !analysis.execution_plan) {
+    throw new Error("Réponse IA mal formée: structure JSON invalide")
+  }
+
+  return analysis
+}
+
+// Fonction : Exécution orchestrée du plan
+async function executeOrchestratedPlan(supabase: any, plan: any, metadata: any) {
+  const results = []
+  
+  for (const step of plan.steps) {
+    try {
+      let result
+      
+      switch (step.engine) {
+        case 'PINN_SOLVER':
+          result = await supabase.functions.invoke('execute-pinn-task', {
+            body: {
+              task: step.task,
+              parameters: step.parameters,
+              metadata: {
+                ...metadata,
+                step_id: step.step_id
+              }
+            }
+          })
+          break
+          
+        case 'CODE_COPILOT':
+          result = await supabase.functions.invoke('scientific-copilot', {
+            body: {
+              code: step.parameters.code,
+              context: step.parameters.context,
+              analysis_type: step.parameters.analysis_type || 'comprehensive'
+            }
+          })
+          break
+          
+        case 'DIGITAL_TWIN':
+          result = await supabase.functions.invoke('digital-twin-optimization', {
+            body: {
+              twin_id: step.parameters.twin_id,
+              optimization_type: step.parameters.optimization_type,
+              constraints: step.parameters.constraints
+            }
+          })
+          break
+          
+        default:
+          result = { error: `Moteur non supporté: ${step.engine}` }
+      }
+      
+      results.push({
+        step_id: step.step_id,
+        engine: step.engine,
+        status: result.error ? 'failed' : 'completed',
+        result: result.data || result.error,
+        execution_time: Date.now(),
+        dependencies_satisfied: checkDependencies(step.dependencies, results)
+      })
+      
+    } catch (error) {
+      results.push({
+        step_id: step.step_id,
+        engine: step.engine,
+        status: 'failed',
+        error: error.message,
+        execution_time: Date.now()
+      })
+    }
+  }
+  
+  return results
+}
+
+// Fonction : Vérification des dépendances
+function checkDependencies(dependencies: string[], results: any[]) {
+  if (!dependencies || dependencies.length === 0) return true
+  
+  return dependencies.every(depId => {
+    const depResult = results.find(r => r.step_id === depId)
+    return depResult && depResult.status === 'completed'
+  })
+}
+
+// Fonction : Synthèse des résultats
+async function synthesizeResults(openai: OpenAI, analysis: any, executionResults: any[]) {
+  const synthesisPrompt = `
+En tant qu'expert scientifique NeuroPhysics Lab, synthétisez les résultats suivants en un rapport professionnel:
+
+ANALYSE INITIALE: ${JSON.stringify(analysis.analysis, null, 2)}
+
+RÉSULTATS D'EXÉCUTION: ${JSON.stringify(executionResults, null, 2)}
+
+Fournissez:
+1. Un résumé exécutif
+2. Les conclusions scientifiques principales
+3. Les limitations identifiées
+4. Les recommandations pour des recherches futures
+5. Les implications pratiques
+
+Format de réponse JSON:
+{
+  "scientific_report": {
+    "executive_summary": string,
+    "main_conclusions": string[],
+    "scientific_significance": string,
+    "limitations": string[],
+    "future_research_directions": string[]
+  },
+  "professional_recommendations": {
+    "immediate_actions": string[],
+    "long_term_strategies": string[],
+    "risk_assessment": string
+  },
+  "estimated_completion_time": number,
+  "recommended_next_steps": string[]
+}
+`
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      { role: "system", content: "Expert scientifique spécialisé en synthèse de résultats de recherche" },
+      { role: "user", content: synthesisPrompt }
+    ],
+    temperature: 0.2,
+    max_tokens: 1500,
+    response_format: { type: "json_object" }
+  })
+
+  const synthesis = JSON.parse(completion.choices[0].message.content || '{}')
+  
+  return {
+    ...synthesis,
+    orchestration_id: `orch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    timestamp: new Date().toISOString()
+  }
+}
+
+// Fonction : Sauvegarde de la trace d'orchestration
+async function saveOrchestrationTrace(supabase: any, data: any) {
+  try {
+    await supabase.from('neurophysics_orchestrations').insert({
+      project_id: data.project_id,
+      user_id: data.user_id,
+      original_query: data.original_query,
+      ai_analysis: data.ai_analysis,
+      execution_results: data.execution_results,
+      final_synthesis: data.final_synthesis,
+      created_at: new Date().toISOString(),
+      status: 'completed'
+    })
+  } catch (error) {
+    console.error('Erreur sauvegarde trace:', error)
+  }
+}
