@@ -1,18 +1,14 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.0";
+import { createClient } from "npm:@supabase/supabase-js@2.42.0";
 
-// Fonction Edge pour la gestion du contexte vectoriel
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
   try {
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "", // Utilisation du rôle service pour l'accès à la DB
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     const { query, context_id } = await req.json();
 
-    // 1. Simulation de la recherche vectorielle dans la table 'documents'
-    // Dans un cas réel, on utiliserait pg_vector et match_documents
     const { data: documents, error: docError } = await supabaseClient
       .from("documents")
       .select("content, metadata")
@@ -20,7 +16,6 @@ serve(async (req) => {
 
     if (docError) throw docError;
 
-    // 2. Simulation de la récupération des résultats précédents
     const { data: history, error: histError } = await supabaseClient
       .from("session_history")
       .select("request, result")
@@ -41,8 +36,8 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json" },
       status: 200,
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error?.message ?? String(error) }), {
       headers: { "Content-Type": "application/json" },
       status: 400,
     });
