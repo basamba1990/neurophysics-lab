@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const baseStyles = "px-4 py-2 rounded-md font-semibold transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2";
+const baseStyles = "px-4 py-2 rounded-md font-semibold transition-all duration-200 ease-in-out hover:shadow-lg hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-offset-2";
 
 const variantStyles = {
   primary: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500",
