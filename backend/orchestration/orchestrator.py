@@ -3,7 +3,7 @@ from .plan_executor import PlanExecutor
 from .context_manager import ContextManager
 from .decision_engine import DecisionEngine
 from .task_dispatcher import TaskDispatcher
-from backend.utils.logger import logger
+from utils.logger import logger
 
 class NeuroPhysicsOrchestrator:
     """
