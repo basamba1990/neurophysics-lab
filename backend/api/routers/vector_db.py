@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any, List
-from backend.orchestration.context_manager import ContextManager
-from backend.utils.logger import logger
+from orchestration.context_manager import ContextManager
+from utils.logger import logger
 
 router = APIRouter(
     prefix="/vector_db",
