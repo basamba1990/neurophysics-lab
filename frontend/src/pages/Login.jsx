@@ -42,7 +42,7 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 md:p-8">
       <div className="max-w-lg w-full">
         {/* Logo et Titre */}
         <div className="text-center mb-10">
@@ -60,7 +60,7 @@ const Login = () => {
         </div>
 
         {/* Carte de connexion */}
-        <div className="bg-gray-50 rounded-3xl shadow-2xl p-6 md:p-10 border border-gray-100">
+        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-10 border border-gray-100">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
             Connexion
           </h2>
