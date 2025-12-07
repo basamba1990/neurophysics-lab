@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any
-from backend.utils.logger import logger
-# from backend.celery_app.worker import app as celery_app # Importation simulée
+from utils.logger import logger
+# from celery_app.worker import app as celery_app # Importation simulée
 
 router = APIRouter(
     prefix="/async",
