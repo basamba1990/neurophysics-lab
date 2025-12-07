@@ -1,7 +1,7 @@
 from typing import Dict, Any, List
-from backend.utils.logger import logger
+from utils.logger import logger
 # Importation simulée d'un LLM pour la planification
-# from backend.services.ai_models import LLMPlanner 
+# services.ai_models import LLMPlanner 
 
 class DecisionEngine:
     """
