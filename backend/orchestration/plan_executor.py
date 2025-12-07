@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 from .task_dispatcher import TaskDispatcher
-from backend.utils.logger import logger
+from utils.logger import logger
 
 class PlanExecutor:
     """
