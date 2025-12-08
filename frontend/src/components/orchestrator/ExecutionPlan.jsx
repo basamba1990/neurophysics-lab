@@ -1,6 +1,6 @@
 import React from 'react';
 import { useOrchestrator } from '../../hooks/useOrchestrator';
-import { logger } from '../../../utils/logger';
+import { logger } from '../../utils/logger';
 
 const ExecutionPlan = () => {
   const { latestPlan } = useOrchestrator();
