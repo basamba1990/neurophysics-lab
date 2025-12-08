@@ -1,16 +1,28 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import Header from './Header.jsx'
 import Sidebar from './Sidebar.jsx'
 
 const WorkspaceLayout = ({ children }) => {
+  const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
 
-  if (!user) {
-    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
-    window.location.href = '/login'
-    return null
+  useEffect(() => {
+    if (!loading && !user) {
+      // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+      navigate('/login')
+    }
+  }, [user, loading, navigate])
+
+  if (loading || !user) {
+    // Afficher un écran de chargement ou un composant vide pendant l'authentification
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    )
   }
 
   return (
