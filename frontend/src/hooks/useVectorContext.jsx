@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback, useContext } from 'react';
 import vectorContextService from '../services/vectorContext';
 import { logger } from '../utils/logger';
 
@@ -56,3 +56,6 @@ export const VectorProvider = ({ children }) => {
     </VectorContext.Provider>
   );
 };
+
+// ✅ Ajouter ce hook pour l'import dans OrchestratorChat
+export const useVectorContext = () => useContext(VectorContext);
