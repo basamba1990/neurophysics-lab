@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth.jsx';
 
 // Nouveaux Providers
-import { VectorProvider } from './hooks/VectorProvider.jsx';
+import { useVectorContext } from './hooks/useVectorContext.jsx';
 import { OrchestratorProvider } from './hooks/OrchestratorProvider.jsx';
 
 import WorkspaceLayout from './components/layout/WorkspaceLayout.jsx';
