@@ -1,9 +1,13 @@
+// frontend/src/hooks/useVectorContext.jsx
+
 import React, { createContext, useState, useCallback, useContext } from 'react';
 import vectorContextService from '../services/vectorContext';
 import { logger } from '../utils/logger';
 
+// Création du context
 export const VectorContext = createContext();
 
+// Provider à utiliser dans ton app
 export const VectorProvider = ({ children }) => {
   const [contextId, setContextId] = useState('session_default_123'); 
   const [contextData, setContextData] = useState([]);
@@ -57,5 +61,8 @@ export const VectorProvider = ({ children }) => {
   );
 };
 
-// ✅ Ajouter ce hook pour l'import dans OrchestratorChat
+// Hook pour utiliser le context facilement
 export const useVectorContext = () => useContext(VectorContext);
+
+// ✅ Export alternatif pour correspondre à l'ancien import
+export const VectorContextProvider = VectorProvider;
