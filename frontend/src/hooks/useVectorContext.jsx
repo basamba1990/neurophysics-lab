@@ -64,5 +64,4 @@ export const VectorProvider = ({ children }) => {
 // Hook pour utiliser le context facilement
 export const useVectorContext = () => useContext(VectorContext);
 
-// ✅ Export alternatif pour correspondre à l'ancien import
-export const VectorContextProvider = VectorProvider;
+

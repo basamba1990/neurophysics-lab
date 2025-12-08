@@ -1,8 +1,21 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext, createContext } from 'react';
 import apiClient from '../services/api';
 import { useWebSocket } from './useWebSocket';
 
+// 1. Créer le Contexte
+const OrchestratorContext = createContext(null);
+
+// 2. Créer le Hook personnalisé
 export function useOrchestrator() {
+  const context = useContext(OrchestratorContext);
+  if (!context) {
+    throw new Error('useOrchestrator must be used within an OrchestratorProvider');
+  }
+  return context;
+}
+
+// 3. Créer le Provider
+export function OrchestratorProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { connect, disconnect, sendMessage, status } = useWebSocket();
@@ -93,7 +106,7 @@ export function useOrchestrator() {
     }
   }, []);
 
-  return {
+  const value = {
     loading,
     error,
     analyzeScientificProblem,
@@ -106,4 +119,10 @@ export function useOrchestrator() {
     disconnect,
     sendMessage,
   };
+
+  return (
+    <OrchestratorContext.Provider value={value}>
+      {children}
+    </OrchestratorContext.Provider>
+  );
 }
