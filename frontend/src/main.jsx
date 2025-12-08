@@ -1,104 +1,37 @@
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-import time
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { Toaster } from 'react-hot-toast'
 
-from core.config import get_settings
-from api.middleware.error_handling import setup_exception_handlers
-from api.middleware.rate_limiting import limiter
-from api.routers import auth, organization, pinn_solver, copilot, digital_twins, analytics, orchestrator, async_tasks, vector_db
-from database.migrations import run_database_migrations
+import App from './App.jsx'
+import './styles/globals.css' // Correction: Le style est maintenant dans ce fichier
 
-settings = get_settings()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    print("🚀 Starting R&D Accelerator Platform")
-    start_time = time.time()
-    
-    # Run database migrations
-    try:
-        run_database_migrations()
-    except Exception as e:
-        print(f"⚠️ Database migrations skipped: {e}")
-    
-    yield
-    
-    # Shutdown
-    print("🛑 Shutting down R&D Accelerator Platform")
-
-app = FastAPI(
-    title="R&D Accelerator Platform",
-    description="AI-Accelerated Engineering Platform - Three Engine Architecture",
-    version="1.0.0",
-    lifespan=lifespan,
-    docs_url="/docs",
-    redoc_url="/redoc"
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <App />
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+          }}
+        />
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>
 )
-
-# CORS Middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Add rate limiting middleware
-app.state.limiter = limiter
-
-# Setup exception handlers
-setup_exception_handlers(app)
-
-# Include routers
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-app.include_router(organization.router, prefix="/api/v1/org", tags=["Organization"])
-app.include_router(pinn_solver.router, prefix="/api/v1/pinn", tags=["PINN Solver"])
-app.include_router(copilot.router, prefix="/api/v1/copilot", tags=["Scientific Copilot"])
-app.include_router(digital_twins.router, prefix="/api/v1/digital-twins", tags=["Digital Twins"])
-app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
-app.include_router(orchestrator.router, prefix="/api/v1", tags=["Orchestrator"])
-app.include_router(async_tasks.router, prefix="/api/v1", tags=["Asynchronous Tasks"])
-app.include_router(vector_db.router, prefix="/api/v1", tags=["Vector Database"])
-
-@app.get("/")
-async def root():
-    return {
-        "message": "🚀 R&D Accelerator Platform - Voie 6",
-        "version": "1.0.0",
-        "status": "operational",
-        "documentation": "/docs"
-    }
-
-@app.get("/health")
-async def health_check():
-    return {
-        "status": "healthy", 
-        "timestamp": time.time(),
-        "services": {
-            "api": "operational",
-            "database": "connected",
-            "ai_services": "available"
-        }
-    }
-
-@app.get("/api/v1/status")
-async def api_status():
-    return {
-        "api_version": "1.0.0",
-        "supported_physics": ["navier_stokes", "heat_transfer", "structural"],
-        "active_engines": ["PINN Solver", "Scientific Copilot", "Digital Twins"],
-        "maintenance_mode": False
-    }
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=settings.DEBUG,
-        log_level="info"
-    )
