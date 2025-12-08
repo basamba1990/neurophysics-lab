@@ -1,44 +1,58 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 
-import { AuthProvider } from './hooks/useAuth.jsx'
-import WorkspaceLayout from './components/layout/WorkspaceLayout.jsx'
-import Workspace from './pages/Workspace.jsx'
-import Projects from './pages/Projects.jsx'
-import Simulations from './pages/Simulations.jsx'
-import Copilot from './pages/Copilot.jsx'
-import DigitalTwins from './pages/DigitalTwins.jsx'
-import Team from './pages/Team.jsx'
-import UsageDashboard from './pages/UsageDashboard.jsx'
-import Settings from './pages/Settings.jsx'
-import Login from './pages/Login.jsx'
-import Register from './pages/Register.jsx'
-import NeuroPhysicsAI from './pages/NeuroPhysicsAI.jsx'
+import { AuthProvider } from './hooks/useAuth.jsx';
+
+// Nouveaux Providers
+import { VectorProvider } from './contexts/VectorProvider.jsx';
+import { OrchestratorProvider } from './contexts/OrchestratorProvider.jsx';
+
+import WorkspaceLayout from './components/layout/WorkspaceLayout.jsx';
+
+import Workspace from './pages/Workspace.jsx';
+import Projects from './pages/Projects.jsx';
+import Simulations from './pages/Simulations.jsx';
+import Copilot from './pages/Copilot.jsx';
+import DigitalTwins from './pages/DigitalTwins.jsx';
+import Team from './pages/Team.jsx';
+import UsageDashboard from './pages/UsageDashboard.jsx';
+import Settings from './pages/Settings.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
+import NeuroPhysicsAI from './pages/NeuroPhysicsAI.jsx';
 
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/*" element={
-          <WorkspaceLayout>
-            <Routes>
-              <Route path="/" element={<Workspace />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/simulations" element={<Simulations />} />
-              <Route path="/copilot" element={<Copilot />} />
-              <Route path="/digital-twins" element={<DigitalTwins />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/usage" element={<UsageDashboard />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/neurophysics-ai" element={<NeuroPhysicsAI />} />
-            </Routes>
-          </WorkspaceLayout>
-        } />
-      </Routes>
+      <VectorProvider>
+        <OrchestratorProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            <Route
+              path="/*"
+              element={
+                <WorkspaceLayout>
+                  <Routes>
+                    <Route path="/" element={<Workspace />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/simulations" element={<Simulations />} />
+                    <Route path="/copilot" element={<Copilot />} />
+                    <Route path="/digital-twins" element={<DigitalTwins />} />
+                    <Route path="/team" element={<Team />} />
+                    <Route path="/usage" element={<UsageDashboard />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/neurophysics-ai" element={<NeuroPhysicsAI />} />
+                  </Routes>
+                </WorkspaceLayout>
+              }
+            />
+          </Routes>
+        </OrchestratorProvider>
+      </VectorProvider>
     </AuthProvider>
-  )
+  );
 }
 
-export default App
+export default App;
