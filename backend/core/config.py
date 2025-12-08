@@ -1,7 +1,8 @@
 # core/config.py
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Optional
+
 
 class Settings(BaseSettings):
     # Application
@@ -11,17 +12,17 @@ class Settings(BaseSettings):
     
     # API
     API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = "Nln4pSQZmn-eGYZO6nMzG9EfHK1Q0ssjYA8g-qs6X-Q"
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
     # Supabase
-    SUPABASE_URL: str = "https://your-project.supabase.co"
-    SUPABASE_KEY: str = "your-supabase-key"
-    SUPABASE_SERVICE_KEY: str = "your-service-key"
+    SUPABASE_URL: str
+    SUPABASE_KEY: str
+    SUPABASE_SERVICE_KEY: str
     
     # OpenAI
-    OPENAI_API_KEY: str = "your-openai-key"
+    OPENAI_API_KEY: str
     OPENAI_ORGANIZATION: Optional[str] = None
     
     # Models
@@ -42,9 +43,13 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB
     UPLOAD_DIR: str = "./data/uploads"
     
-    # Redis / WebSockets cache
+    # Redis / WebSockets cache (local or cloud)
     REDIS_URL: str = "redis://localhost:6379"
-    
+
+    # UPSTASH REDIS (⚠️ Ajout obligatoire pour corriger ton erreur)
+    UPSTASH_REDIS_REST_URL: Optional[str] = None
+    UPSTASH_REDIS_REST_TOKEN: Optional[str] = None
+
     # Cloud providers
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
@@ -55,9 +60,12 @@ class Settings(BaseSettings):
     
     AZURE_STORAGE_CONNECTION_STRING: Optional[str] = None
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    # ⚠️ Nouvelle syntaxe Pydantic v2
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="allow"   # 🔥 IMPORTANT : empêche les erreurs extra_forbidden
+    )
 
 
 def get_settings():
