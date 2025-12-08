@@ -7,7 +7,7 @@ import {
 
 import  Button  from '../ui/Button'
 import  Input  from '../ui/Input'
-import  logger  from '../../utils/logger'
+import { logger } from '../../utils/logger'
 
 const WorkflowBuilder = ({ onSave, onExecute, initialWorkflow }) => {
   const [workflow, setWorkflow] = useState(initialWorkflow || {
