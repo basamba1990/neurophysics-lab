@@ -2,10 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import { AuthProvider } from './hooks/useAuth.jsx';
-
-// Nouveaux Providers
-import { useVectorContext } from './hooks/useVectorContext.jsx';
-import { useOrchestrator } from './hooks/useOrchestrator.jsx';
+import { VectorProvider } from './contexts/VectorProvider.jsx';
+import { OrchestratorProvider } from './contexts/OrchestratorProvider.jsx';
 
 import WorkspaceLayout from './components/layout/WorkspaceLayout.jsx';
 
