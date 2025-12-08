@@ -13,6 +13,7 @@ import UsageDashboard from './pages/UsageDashboard.jsx'
 import Settings from './pages/Settings.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
+import NeuroPhysicsAI from './pages/NeuroPhysicsAI.jsx'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               <Route path="/team" element={<Team />} />
               <Route path="/usage" element={<UsageDashboard />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/neurophysics-ai" element={<NeuroPhysicsAI />} />
             </Routes>
           </WorkspaceLayout>
         } />
