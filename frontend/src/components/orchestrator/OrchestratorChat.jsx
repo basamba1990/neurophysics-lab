@@ -1,14 +1,16 @@
 import React, { useState, useCallback } from 'react';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
+import Button from '../ui/Button';         // <-- correction : import par défaut
+import Input from '../ui/Input';           // <-- correction : import par défaut
 import { useOrchestrator } from '../../hooks/useOrchestrator';
-import { useVectorContext } from '../../hooks/useVectorContext';
-import { logger } from '../../utils/logger'; // Assumer un logger frontend
+import { VectorContext } from '../../hooks/useVectorContext'; // <-- import correct
+import { logger } from '../../utils/logger'; // Logger frontend
 
 const OrchestratorChat = () => {
   const [input, setInput] = useState('');
   const { messages, sendMessage, isLoading } = useOrchestrator();
-  const { contextId } = useVectorContext();
+
+  // Récupérer le context depuis le provider
+  const { contextId } = React.useContext(VectorContext);
 
   const handleSend = useCallback(() => {
     if (input.trim() === '') return;
