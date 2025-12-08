@@ -5,12 +5,12 @@ import WorkflowBuilder from '../components/orchestrator/WorkflowBuilder';
 import ExecutionPlan from '../components/orchestrator/ExecutionPlan';
 import ResultsSynthesizer from '../components/orchestrator/ResultsSynthesizer';
 import { OrchestratorProvider } from '../hooks/useOrchestrator';
-import { VectorContextProvider } from '../hooks/useVectorContext';
+import { VectorProvider } from '../hooks/useVectorContext';
 
 const NeuroPhysicsAI = () => {
   return (
     <WorkspaceLayout title="NeuroPhysics AI Orchestrator">
-      <VectorContextProvider>
+      <VectorProvider>
         <OrchestratorProvider>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
             {/* Colonne 1: Chat et Synthèse */}
@@ -22,7 +22,7 @@ const NeuroPhysicsAI = () => {
                 <ResultsSynthesizer />
               </div>
             </div>
-            
+
             {/* Colonne 2: Planification et Workflow */}
             <div className="lg:col-span-1 flex flex-col space-y-6">
               <div className="h-1/2">
@@ -34,7 +34,7 @@ const NeuroPhysicsAI = () => {
             </div>
           </div>
         </OrchestratorProvider>
-      </VectorContextProvider>
+      </VectorProvider>
     </WorkspaceLayout>
   );
 };
