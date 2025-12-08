@@ -3,7 +3,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useOrchestrator } from '../../hooks/useOrchestrator';
 import { useVectorContext } from '../../hooks/useVectorContext';
-import { logger } from '../../../utils/logger'; // Assumer un logger frontend
+import { logger } from '../../utils/logger'; // Assumer un logger frontend
 
 const OrchestratorChat = () => {
   const [input, setInput] = useState('');
