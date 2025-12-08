@@ -61,6 +61,9 @@ optimization_logger = setup_logger("optimization_engine")
 api_logger = setup_logger("api")
 database_logger = setup_logger("database")
 
+# Logger générique pour les modules qui n'ont pas de logger spécifique
+logger = setup_logger("app")
+
 def log_extra_data(logger: logging.Logger, message: str, extra_data: Dict[str, Any], level: str = "info"):
     log_method = getattr(logger, level.lower())
     log_method(message, extra={"extra_data": extra_data})
