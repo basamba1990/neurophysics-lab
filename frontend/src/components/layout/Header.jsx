@@ -22,7 +22,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
           <Bell className="h-6 w-6" />
         </button>
         <div className="flex items-center space-x-2">
-          <span className="text-sm font-medium text-gray-700">Utilisateur Test</span>
+          <span className="text-sm font-medium text-gray-700">{user?.full_name || "Utilisateur"}</span>
           <div className="p-2 rounded-full bg-blue-500 text-white">
             <User className="h-6 w-6" />
           </div>
