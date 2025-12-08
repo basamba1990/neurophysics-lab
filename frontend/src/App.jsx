@@ -5,7 +5,7 @@ import { AuthProvider } from './hooks/useAuth.jsx';
 
 // Nouveaux Providers
 import { useVectorContext } from './hooks/useVectorContext.jsx';
-import { OrchestratorProvider } from './hooks/OrchestratorProvider.jsx';
+import { useOrchestrator } from './hooks/useOrchestrator.jsx';
 
 import WorkspaceLayout from './components/layout/WorkspaceLayout.jsx';
 
