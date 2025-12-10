@@ -1,11 +1,9 @@
-# app/api/routers/auth.py
-
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
 from database.supabase_client import get_supabase
 from models.pydantic_models import UserCreate, UserResponse, Token
 from core.security import create_access_token
-from api.dependencies import get_repository_factory, get_current_user
+from api.dependencies import get_repository_factory, CurrentUser # <-- Ligne 8 corrigée
 from core.exceptions import AuthenticationError
 
 router = APIRouter()
@@ -104,7 +102,7 @@ async def logout():
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user(
-    current_user = Depends(get_current_user)
+    current_user: CurrentUser # <-- Ligne 107 corrigée
 ):
     return current_user
 
