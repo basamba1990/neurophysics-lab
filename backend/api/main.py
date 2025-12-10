@@ -1,5 +1,3 @@
-# Fichier: backend/api/main.py (Version Corrigée pour Production)
-
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +6,7 @@ from contextlib import asynccontextmanager
 # Import des routers (assurez-vous que tous les imports sont corrects)
 from .routers import (
     auth, 
-    organizations, 
+    organization, # <-- CORRIGÉ : organizations remplacé par organization
     pinn_solver, 
     copilot, 
     digital_twins, 
@@ -53,7 +51,7 @@ app.add_middleware(
 # Assurez-vous que tous les routers sont inclus pour éviter les erreurs 404
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-app.include_router(organizations.router, prefix="/api/v1/organizations", tags=["Organizations"])
+app.include_router(organization.router, prefix="/api/v1/organizations", tags=["Organizations"]) # <-- NOTE: Le router est inclus sous le nom 'organization'
 app.include_router(pinn_solver.router, prefix="/api/v1/pinn", tags=["PINN Solver"])
 app.include_router(copilot.router, prefix="/api/v1/copilot", tags=["Copilot"])
 app.include_router(digital_twins.router, prefix="/api/v1/digital-twins", tags=["Digital Twins"])
