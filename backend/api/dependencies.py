@@ -1,5 +1,3 @@
-# Fichier: backend/api/dependencies.py (Version Corrigée pour Production)
-
 import os
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
