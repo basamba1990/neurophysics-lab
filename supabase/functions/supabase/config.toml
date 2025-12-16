@@ -1,0 +1,21 @@
+# Configuration pour les Supabase Edge Functions
+# Définition des fonctions à déployer
+
+[[functions]]
+name = "neurophysics-orchestrator"
+main = "neurophysics-orchestrator/index.ts"
+path = "neurophysics-orchestrator"
+# Dépendances externes pour Deno
+import_map = "./import_map.json"
+
+[[functions]]
+name = "scientific-copilot"
+main = "neurophysics-orchestrator/scientific-copilot/index.ts"
+path = "neurophysics-orchestrator/scientific-copilot"
+import_map = "./import_map.json"
+
+[[functions]]
+name = "vector-context"
+main = "neurophysics-orchestrator/vector-context/index.ts"
+path = "neurophysics-orchestrator/vector-context"
+import_map = "./import_map.json"

@@ -1,0 +1,29 @@
+# Fichier de configuration Render pour le déploiement du Backend
+# Ce fichier est basé sur l'analyse du projet neurophysics-lab
+
+services:
+  # Service Web pour le Backend FastAPI
+  - type: web
+    name: neurophysics-lab-backend
+    env: python
+    plan: standard # Utiliser un plan standard pour éviter le sommeil (dormant)
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn api.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: PORT
+        value: 8000
+      - key: SECRET_KEY
+        sync: false # Ne pas synchroniser, doit être défini manuellement dans l'interface Render
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      # Ajouter ici d'autres variables d'environnement critiques (REDIS, AWS, etc.)
+      # qui devront être configurées dans l'interface Render.

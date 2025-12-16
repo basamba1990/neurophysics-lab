@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Application du thème sombre de base */
+body {
+  @apply bg-background text-text-primary;
+}
+
+/* Styles pour les boutons et inputs (pour un look plus professionnel) */
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-opacity-90 transition duration-300 ease-in-out;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-surface border border-gray-700 rounded-lg text-text-primary placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-300;
+  }
+}
+
+/* Scrollbar stylisée pour un look moderne */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #181818;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
