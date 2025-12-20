@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth.jsx';
 import { VectorProvider } from './hooks/useVectorContext.jsx';
 import { OrchestratorProvider } from './hooks/useOrchestrator.jsx';
+import { ToastProvider } from './components/ui/ToastProvider.jsx'; // Importer le ToastProvider
 
 import WorkspaceLayout from './components/layout/WorkspaceLayout.jsx';
 
@@ -24,29 +25,31 @@ function App() {
     <AuthProvider>
       <VectorProvider>
         <OrchestratorProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+          <ToastProvider> {/* Envelopper l'application avec ToastProvider */}
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            <Route
-              path="/*"
-              element={
-                <WorkspaceLayout>
-                  <Routes>
-                    <Route path="/" element={<Workspace />} />
-                    <Route path="/projects" element={<Projects />} />
-                    <Route path="/simulations" element={<Simulations />} />
-                    <Route path="/copilot" element={<Copilot />} />
-                    <Route path="/digital-twins" element={<DigitalTwins />} />
-                    <Route path="/team" element={<Team />} />
-                    <Route path="/usage" element={<UsageDashboard />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/neurophysics-ai" element={<NeuroPhysicsAI />} />
-                  </Routes>
-                </WorkspaceLayout>
-              }
-            />
-          </Routes>
+              <Route
+                path="/*"
+                element={
+                  <WorkspaceLayout>
+                    <Routes>
+                      <Route path="/" element={<Workspace />} />
+                      <Route path="/projects" element={<Projects />} />
+                      <Route path="/simulations" element={<Simulations />} />
+                      <Route path="/copilot" element={<Copilot />} />
+                      <Route path="/digital-twins" element={<DigitalTwins />} />
+                      <Route path="/team" element={<Team />} />
+                      <Route path="/usage" element={<UsageDashboard />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/neurophysics-ai" element={<NeuroPhysicsAI />} />
+                    </Routes>
+                  </WorkspaceLayout>
+                }
+              />
+            </Routes>
+          </ToastProvider>
         </OrchestratorProvider>
       </VectorProvider>
     </AuthProvider>
