@@ -9,6 +9,8 @@ import {
   Zap,
   CheckCircle
 } from 'lucide-react'
+import { Breadcrumb } from '../ui/Breadcrumb.jsx'; // Importer le composant Breadcrumb
+import Button from '../ui/Button.jsx'; // Importer le composant Button
 
 const Workspace = () => {
   const quickActions = [
@@ -50,6 +52,9 @@ const Workspace = () => {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb */}
+      <Breadcrumb items={["Espace de Travail R&D"]} />
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Espace de Travail R&D</h1>

@@ -16,6 +16,7 @@ import apiClient from '../services/api'
 import CodeEditor from '../components/copilot/CodeEditor'
 import AISuggestionsPanel from '../components/copilot/AISuggestionsPanel'
 import PhysicsContextSidebar from '../components/copilot/PhysicsContextSidebar'
+import { useToast } from '../ui/ToastProvider.jsx'; // Importer le hook useToast
 
 const Copilot = () => {
   const [code, setCode] = useState(`program heat_transfer
@@ -62,6 +63,7 @@ end program heat_transfer`)
   })
 
   const { handleSubmit, register } = useForm()
+  const { showToast } = useToast(); // Utiliser le hook useToast
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true)
@@ -73,8 +75,10 @@ end program heat_transfer`)
         analysis_type: 'modernization'
       })
       setSuggestions(result.suggestions || [])
+      showToast('success', 'Analyse terminée avec succès'); // Afficher une notification
     } catch (error) {
       console.error('Analysis failed:', error)
+      showToast('error', 'Échec de l\'analyse du code'); // Afficher une notification d'erreur
     } finally {
       setIsAnalyzing(false)
     }
@@ -88,8 +92,10 @@ end program heat_transfer`)
         context: { physics_context: physicsContext }
       })
       setCode(result.modern_python || code)
+      showToast('success', 'Code modernisé avec succès'); // Afficher une notification
     } catch (error) {
       console.error('Modernization failed:', error)
+      showToast('error', 'Échec de la modernisation du code'); // Afficher une notification d'erreur
     } finally {
       setIsAnalyzing(false)
     }
@@ -105,6 +111,7 @@ end program heat_transfer`)
       const reader = new FileReader()
       reader.onload = (e) => setCode(e.target.result)
       reader.readAsText(file)
+      showToast('info', 'Fichier importé avec succès'); // Afficher une notification
     }
   }
 
@@ -130,11 +137,16 @@ end program heat_transfer`)
             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {isAnalyzing ? (
-              <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+              <>
+                <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                <span>Analyse en cours...</span>
+              </>
             ) : (
-              <Sparkles className="h-5 w-5 mr-2" />
+              <>
+                <Sparkles className="h-5 w-5 mr-2" />
+                <span>Analyser le code</span>
+              </>
             )}
-            Analyser le code
           </button>
         </div>
       </div>
@@ -172,7 +184,7 @@ end program heat_transfer`)
                 <div className="flex items-center space-x-2">
                   <label className="flex items-center px-3 py-1 border border-gray-300 rounded text-sm cursor-pointer hover:bg-gray-50">
                     <Upload className="h-4 w-4 mr-1" />
-                    Importer
+                    <span>Importer</span>
                     <input
                       type="file"
                       accept=".f,.for,.f90,.f95,.f03,.cpp,.cxx,.cc,.py"
@@ -186,7 +198,7 @@ end program heat_transfer`)
                     className="flex items-center px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 disabled:opacity-50"
                   >
                     <Sparkles className="h-4 w-4 mr-1" />
-                    Moderniser
+                    <span>Moderniser</span>
                   </button>
                 </div>
               </div>
@@ -224,6 +236,7 @@ end program heat_transfer`)
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(code)
+                  showToast('success', 'Code copié dans le presse-papiers'); // Afficher une notification
                 }}
                 className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
               >
@@ -238,6 +251,7 @@ end program heat_transfer`)
                   a.href = url
                   a.download = `code.${language}`
                   a.click()
+                  showToast('success', 'Code téléchargé avec succès'); // Afficher une notification
                 }}
                 className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
               >
@@ -255,6 +269,7 @@ end program heat_transfer`)
             isLoading={isAnalyzing}
             onApplySuggestion={(suggestion) => {
               setCode(suggestion.suggested_code)
+              showToast('success', 'Suggestion appliquée avec succès'); // Afficher une notification
             }}
           />
         </div>

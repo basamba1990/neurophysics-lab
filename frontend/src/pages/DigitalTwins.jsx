@@ -9,8 +9,11 @@ import {
   RefreshCw,
   Play,
   Pause,
-  Download
-} from 'lucide-react'
+  Download,
+  Wind,
+  Flame,
+  FlaskConical
+} from 'lucide-react' // Importer les icônes Lucide
 import TwinConfigurator from '../components/digital-twins/TwinConfigurator'
 import OptimizationDashboard from '../components/digital-twins/OptimizationDashboard'
 import PerformanceMonitor from '../components/digital-twins/PerformanceMonitor'
@@ -72,10 +75,10 @@ const DigitalTwins = () => {
 
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'wind_turbine': return '🌬️'
-      case 'heat_exchanger': return '🔥'
-      case 'chemical_reactor': return '⚗️'
-      default: return '📊'
+      case 'wind_turbine': return <Wind className="h-6 w-6 text-blue-600" />;
+      case 'heat_exchanger': return <Flame className="h-6 w-6 text-orange-600" />;
+      case 'chemical_reactor': return <FlaskConical className="h-6 w-6 text-purple-600" />;
+      default: return <Network className="h-6 w-6 text-gray-600" />;
     }
   }
 
@@ -96,7 +99,7 @@ const DigitalTwins = () => {
         </div>
         <button className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
           <Plus className="h-5 w-5 mr-2" />
-          Nouveau jumeau
+          <span>Nouveau jumeau</span>
         </button>
       </div>
 
@@ -184,8 +187,8 @@ const DigitalTwins = () => {
                       <div className="flex justify-between items-start mb-4">
                         <div>
                           <div className="flex items-center">
-                            <span className="text-2xl mr-2">{getTypeIcon(twin.type)}</span>
-                            <h4 className="font-semibold text-gray-900">{twin.name}</h4>
+                            {getTypeIcon(twin.type)}
+                            <h4 className="font-semibold text-gray-900 ml-2">{twin.name}</h4>
                           </div>
                           <p className="text-sm text-gray-600 mt-1 capitalize">{twin.type.replace('_', ' ')}</p>
                         </div>
@@ -226,7 +229,7 @@ const DigitalTwins = () => {
                       <div className="flex space-x-2 mt-6">
                         <button className="flex-1 flex items-center justify-center px-3 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700">
                           <Play className="h-4 w-4 mr-1" />
-                          Démarrer
+                          <span>Démarrer</span>
                         </button>
                         <button className="px-3 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-50">
                           <Settings className="h-4 w-4" />

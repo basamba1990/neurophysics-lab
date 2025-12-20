@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import apiClient from '../services/api'
 import SimulationRunner from '../components/solver/SimulationRunner'
+import { useToast } from '../ui/ToastProvider.jsx'; // Importer le hook useToast
 
 // Composant de visualisation simplifié (remplace ResultsVisualization temporairement)
 const SimpleResultsVisualization = ({ simulation }) => {
@@ -78,6 +79,7 @@ const Simulations = () => {
   const [selectedSimulation, setSelectedSimulation] = useState(null)
   const [filter, setFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const { showToast } = useToast(); // Utiliser le hook useToast
 
   // Données de simulation mockées (en attendant l'API)
   const [simulations, setSimulations] = useState([
@@ -150,6 +152,7 @@ const Simulations = () => {
       }
       
       setSimulations(prev => [newSim, ...prev])
+      showToast('info', 'Simulation créée avec succès'); // Afficher une notification
       
       // Simuler le lancement
       setTimeout(() => {
@@ -160,6 +163,7 @@ const Simulations = () => {
               : sim
           )
         )
+        showToast('info', 'Simulation en cours d\'exécution'); // Afficher une notification
         
         // Simuler la complétion après 5 secondes
         setTimeout(() => {
@@ -175,11 +179,13 @@ const Simulations = () => {
                 : sim
             )
           )
+          showToast('success', 'Simulation terminée avec succès'); // Afficher une notification
         }, 5000)
       }, 1000)
       
     } catch (error) {
       console.error('Failed to run simulation:', error)
+      showToast('error', 'Échec du lancement de la simulation'); // Afficher une notification d'erreur
     }
   }
 
@@ -292,29 +298,17 @@ const Simulations = () => {
                           {simulation.status === 'completed' && (
                             <button
                               onClick={(e) => {
-                                e.stopPropagation()
-                                // Handle download
+                                e.stopPropagation();
+                                showToast('success', 'Simulation téléchargée avec succès'); // Afficher une notification
                               }}
-                              className="text-gray-400 hover:text-gray-600"
+                              className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
+                              aria-label="Télécharger"
                             >
                               <Download className="h-4 w-4" />
                             </button>
                           )}
                         </div>
                       </div>
-                      
-                      {/* Paramètres rapides */}
-                      {simulation.input_parameters && (
-                        <div className="mt-3 pt-3 border-t border-gray-100">
-                          <div className="flex space-x-4 text-sm">
-                            {Object.entries(simulation.input_parameters).map(([key, value]) => (
-                              <div key={key} className="text-gray-600">
-                                <span className="font-medium">{key}:</span> {value}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -323,66 +317,9 @@ const Simulations = () => {
           </div>
         </div>
 
-        {/* Right Panel - Details and Visualization */}
-        <div className="space-y-6">
-          {/* Simulation Details */}
-          {selectedSimulation ? (
-            <>
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Détails de la simulation
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Nom</label>
-                    <p className="mt-1 text-gray-900">{selectedSimulation.name}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Statut</label>
-                    <div className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedSimulation.status)}`}>
-                        {getStatusIcon(selectedSimulation.status)}
-                        <span className="ml-1 capitalize">{selectedSimulation.status}</span>
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Paramètres</label>
-                    <div className="mt-1 p-3 bg-gray-50 rounded text-sm">
-                      <pre className="overflow-auto">
-                        {JSON.stringify(selectedSimulation.input_parameters, null, 2)}
-                      </pre>
-                    </div>
-                  </div>
-                  {selectedSimulation.execution_time && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Temps d'exécution
-                      </label>
-                      <p className="mt-1 text-gray-900">
-                        {selectedSimulation.execution_time} secondes
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Results Visualization */}
-              <SimpleResultsVisualization simulation={selectedSimulation} />
-            </>
-          ) : (
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-center py-8">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900">
-                  Sélectionnez une simulation
-                </h3>
-                <p className="mt-2 text-gray-600">
-                  Cliquez sur une simulation dans la liste pour voir ses détails
-                </p>
-              </div>
-            </div>
-          )}
+        {/* Right Panel - Results Visualization */}
+        <div className="lg:col-span-1">
+          <SimpleResultsVisualization simulation={selectedSimulation} />
         </div>
       </div>
     </div>
